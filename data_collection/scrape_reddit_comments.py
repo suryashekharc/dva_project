@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 from operator import attrgetter
 import praw
-from print_schema import print_schema
 import credentials
 class ScrapeRedditComments:
     def __init__(self):
@@ -26,19 +25,22 @@ class ScrapeRedditComments:
         # for cases where sub name isn't exactly the location name
         location = args.location if "location" in args \
             else args.subreddit_name
-        for comment in self.reddit_obj.subreddit(
-            args.subreddit_name).comments(limit=args.post_count
-            ):
-            row_ct += 1
-            row = {}
-            try:
-                for field in fields:
-                    row[field] = attrgetter(field)(comment)
-                df_dict_list.append(row)
-            except Exception as e:
-                print(f"Exception {exception_ct} while processing {row_ct}")
-                print(e)
-                exception_ct += 1
+        try:
+            for comment in self.reddit_obj.subreddit(
+                args.subreddit_name).comments(limit=args.post_count
+                ):
+                row_ct += 1
+                row = {}
+                try:
+                    for field in fields:
+                        row[field] = attrgetter(field)(comment)
+                    df_dict_list.append(row)
+                except Exception as e:
+                    print(f"Exception {exception_ct} while processing {row_ct}")
+                    print(e)
+                    exception_ct += 1
+        except Exception as e:
+            print(f"Problem with sub: {e}")
 
         df = pd.DataFrame.from_records(df_dict_list)
         if "min_threshold" in args:

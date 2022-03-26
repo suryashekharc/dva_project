@@ -42,7 +42,7 @@ class AutomateScraping:
             args = argparse.Namespace(
                 subreddit_name=sub_name,
                 post_count=5000,
-                time_filter="month",
+                time_filter="week",
                 fields="body,author_fullname,author.name,controversiality,created,downs,fullname,id,is_root,link_author,link_id,link_permalink,link_title,permalink,score,subreddit_name_prefixed,total_awards_received,ups",
                 location=location,
                 min_threshold=800
