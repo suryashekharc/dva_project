@@ -74,10 +74,10 @@ for location in location_list:
         location_name,
         data['TOXICITY'].mean(),
         data['SEVERE_TOXICITY'].mean(),
-        data['TOXICITY'].mean(),
         data['IDENTITY_ATTACK'].mean(),
         data['INSULT'].mean(),
         data['PROFANITY'].mean(),
+        data['THREAT'].mean(),
         data['SEXUALLY_EXPLICIT'].mean()]
     print(output)
 
