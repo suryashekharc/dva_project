@@ -26,10 +26,13 @@ class AutomateScraping:
         for div in data:
             links = div.findAll('a')
             for a in links:
-                print(a['href'])
+                # print(a['href'])
                 if a['href'].startswith("/r/") and \
                     len(a['href'].split('/')) == 3:
                     title, link = a.contents[0], a['href']
+                    # Callout: Location duplicates are not getting treated
+                    if title in link_dict.keys():
+                        print(f"Rewriting {title}: {link_dict[title]} -> {link}")
                     link_dict[title] = link
         return link_dict
 
@@ -53,4 +56,6 @@ class AutomateScraping:
 if __name__ == "__main__":
     as_obj = AutomateScraping()
     link_dict = as_obj.get_links(page_url='https://www.reddit.com/r/LocationReddits/wiki/faq/northamerica')
+
+    # link_dict = {'California': '/r/california', 'Oregon': '/r/oregon'}
     as_obj.scrape_reddit(link_dict)
