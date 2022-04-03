@@ -46,12 +46,12 @@
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
             .scale(600);
         var path = d3.geoPath().projection(projection);
-        var colors = d3.scaleQuantile().range(d3.schemeBlues[9]);
+        var colors = d3.scaleQuantile().range(d3.schemeReds[9]);
 
         // Read our data in a promise
         // TODO 1: Hook this up with some sort of web service? Idk. Feeding latest data might be nice but we could stick with csvs.
         Promise.all([
-            d3.csv("./state_data.csv"),
+            d3.csv("./output_clean.csv"),
             d3.json("./us_map.json")
         ]).then(d => { ready(d[0], d[1])});
         function ready(stateData, usMap) {
@@ -83,8 +83,11 @@
             const weighting = ReturnWeights();
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
             for(i = 0; i<keys.length; i++){
-                var weightedState = [parseFloat(keys[i].racism)*weighting[0], parseFloat(keys[i].sexism)*weighting[1], parseFloat(keys[i].adhominem)*weighting[2]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2];
+                var weightedState = [parseFloat(keys[i].TOXICITY)*weighting[0], parseFloat(keys[i].SEVERE_TOXICITY)*weighting[1],
+                    parseFloat(keys[i].IDENTITY_ATTACK)*weighting[2], parseFloat(keys[i].INSULT)*weighting[3],
+                    parseFloat(keys[i].PROFANITY)*weighting[4], parseFloat(keys[i].THREAT)*weighting[5],
+                    parseFloat(keys[i].SEXUALLY_EXPLICIT)*weighting[6]];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
                 arr.push(weightedState)
                 keys[i].t_score= weightedState;
             }
@@ -100,7 +103,7 @@
                     var name = d.properties.NAME;
                     for(i = 0; i < keys.length; i++)
                     {
-                        if (keys[i].state.toLowerCase() == name.toLowerCase())
+                        if (keys[i].location_name.toLowerCase() == name.toLowerCase())
                         {
                             var toxicity = keys[i].t_score;
                             return colors(toxicity);
@@ -119,25 +122,36 @@
 
             // TODO 2: Update tip in-line with weights update (once we narrow down what fields we'd like to use to establish toxicity).
             tip.html(function (d){
-                var toxicity = "";
-                var racism = "";
-                var sexism = "";
-                var adhominem = "";
+                var t_score = "";
                 var stateName = "";
+                var TOXICITY = "";
+                var SEVERE_TOXICITY = "";
+                var IDENTITY_ATTACK = "";
+                var INSULT = "";
+                var PROFANITY = "";
+                var THREAT = "";
+                var SEXUALLY_EXPLICIT = "";
                 var name = d.properties.NAME;
                 for(i = 0; i < keys.length; i++)
                 {
-                    if (keys[i].state.toLowerCase() == name.toLowerCase())
+                    if (keys[i].location_name.toLowerCase() == name.toLowerCase())
                     {
-                        toxicity = keys[i].t_score.toFixed(2);
-                        racism = parseFloat(keys[i].racism).toFixed(2);
-                        sexism = parseFloat(keys[i].sexism).toFixed(2);
-                        adhominem = parseFloat(keys[i].adhominem).toFixed(2);
+                        t_score = keys[i].t_score.toFixed(2);
+                        TOXICITY = parseFloat(keys[i].TOXICITY).toFixed(2);
+                        SEVERE_TOXICITY = parseFloat(keys[i].SEVERE_TOXICITY).toFixed(2);
+                        IDENTITY_ATTACK = parseFloat(keys[i].IDENTITY_ATTACK).toFixed(2);
+                        INSULT = parseFloat(keys[i].INSULT).toFixed(2);
+                        PROFANITY = parseFloat(keys[i].PROFANITY).toFixed(2);
+                        THREAT = parseFloat(keys[i].THREAT).toFixed(2);
+                        SEXUALLY_EXPLICIT = parseFloat(keys[i].SEXUALLY_EXPLICIT).toFixed(2);
                         stateName = name;
                         break;
                     }
                 }
-                return_string = "State: " + stateName + "<br>" + "Toxicity: " + toxicity + "<br>" + "Racism: " + racism + "<br>" + "Sexism: " + sexism + "<br>" + "Ad Hominem: " + adhominem;
+                return_string = "State: " + stateName + "<br>" + "Score: " + t_score + "<br>" + "Toxicity: " + TOXICITY + "<br>"
+                + "Severe Toxicity: " + SEVERE_TOXICITY + "<br>" + "Identity Attack: " + IDENTITY_ATTACK
+                + "<br>" + "Insult: " + INSULT + "<br>" + "Profanity: " + PROFANITY + "<br>" + "Threat: " + THREAT
+                + "<br>" + "Sexually Explicit: " + SEXUALLY_EXPLICIT;
                 return return_string;
             })
 
@@ -171,8 +185,11 @@
             var arr = [];
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
             for(i = 0; i<stateData.length; i++){
-                var weightedState = [parseFloat(stateData[i].racism)*weighting[0], parseFloat(stateData[i].sexism)*weighting[1], parseFloat(stateData[i].adhominem)*weighting[2]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2];
+                var weightedState = [parseFloat(stateData[i].TOXICITY)*weighting[0], parseFloat(stateData[i].SEVERE_TOXICITY)*weighting[1],
+                    parseFloat(stateData[i].IDENTITY_ATTACK)*weighting[2], parseFloat(stateData[i].INSULT)*weighting[3],
+                    parseFloat(stateData[i].PROFANITY)*weighting[4], parseFloat(stateData[i].THREAT)*weighting[5],
+                    parseFloat(stateData[i].SEXUALLY_EXPLICIT)*weighting[6]];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
                 arr.push(weightedState)
                 stateData[i].t_score= weightedState;
             }
@@ -180,8 +197,6 @@
             var sortedStateData = stateData.sort(function(a, b){
                 return b.t_score - a.t_score;
             });
-
-
 
             var xBarScale = d3.scaleLinear()
                     .range([0, width])
@@ -191,7 +206,7 @@
             
             var yBarScale = d3.scaleBand()
                     .range([0, height])
-                    .domain(sortedStateData.map(function(d){console.log(d);return d.state}));
+                    .domain(sortedStateData.map(function(d){console.log(d);return d.location_name}));
 
             let xbar_axis = d3.axisBottom(xBarScale)
             .tickSize(-height);
@@ -208,7 +223,7 @@
                     .append("rect")
                     .attr("x", xBarScale(0))
                     .attr("y", function(d){ 
-                        return yBarScale(d.state)
+                        return yBarScale(d.location_name)
                     })
                     .attr("width", function(d){
                         return xBarScale(d.t_score) - xBarScale(0)
@@ -258,8 +273,11 @@
         {
             var arr = [];
             for(i = 0; i<data.length; i++){
-                var weightedState = [parseFloat(data[i].racism)*weights[0], parseFloat(data[i].sexism)*weights[1], parseFloat(data[i].adhominem)*weights[2]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2];
+                var weightedState = [parseFloat(data[i].TOXICITY)*weighting[0], parseFloat(data[i].SEVERE_TOXICITY)*weighting[1],
+                    parseFloat(data[i].IDENTITY_ATTACK)*weighting[2], parseFloat(data[i].INSULT)*weighting[3],
+                    parseFloat(data[i].PROFANITY)*weighting[4], parseFloat(data[i].THREAT)*weighting[5],
+                    parseFloat(data[i].SEXUALLY_EXPLICIT)*weighting[6]];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
                 arr.push(weightedState)
                 data[i].t_score= weightedState;
             }
