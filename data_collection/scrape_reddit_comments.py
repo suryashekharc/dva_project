@@ -5,6 +5,9 @@ import pandas as pd
 from operator import attrgetter
 import praw
 import credentials
+from datetime import date
+import os
+
 class ScrapeRedditComments:
     def __init__(self):
         # NOTE: Ensure the credentials.py file is present in the current directory
@@ -15,6 +18,10 @@ class ScrapeRedditComments:
                                 username=credentials.username)
         if not self.reddit_obj.read_only:  # Flag to ensure this object has been correctly configured
             raise Exception("Reddit object not configured correctly to be read_only.")
+        today = date.today()
+        self.output_prefix = f'data_{today.strftime("%Y%m%d")}'
+        if not os.path.exists(self.output_prefix):
+            os.mkdir(self.output_prefix)
 
 
     def scrape(self, args):
@@ -45,11 +52,11 @@ class ScrapeRedditComments:
         df = pd.DataFrame.from_records(df_dict_list)
         if "min_threshold" in args:
             if len(df) >= args.min_threshold:
-                df.to_csv(f"data/{location}_{len(df)}.csv", header=True, index=False)
+                df.to_csv(f"{self.output_prefix}/{location}_{len(df)}.csv", header=True, index=False)
             else:
                 print("Skipping, insufficient data")
         else:
-            df.to_csv(f"data/{location}_{len(df)}.csv", header=True, index=False)
+            df.to_csv(f"{self.output_prefix}/{location}_{len(df)}.csv", header=True, index=False)
 
 
 if __name__ == "__main__":

@@ -57,5 +57,7 @@ if __name__ == "__main__":
     as_obj = AutomateScraping()
     link_dict = as_obj.get_links(page_url='https://www.reddit.com/r/LocationReddits/wiki/faq/northamerica')
 
-    # link_dict = {'California': '/r/california', 'Oregon': '/r/oregon'}
+    link_dict['California'] = '/r/california'
+    link_dict['Oregon'] = '/r/oregon'
+    print(f"Total subreddits being queried: {len(link_dict)}")
     as_obj.scrape_reddit(link_dict)
