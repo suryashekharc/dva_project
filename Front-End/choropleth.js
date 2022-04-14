@@ -83,11 +83,12 @@
             const weighting = ReturnWeights();
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
             for(i = 0; i<keys.length; i++){
-                var weightedState = [parseFloat(keys[i].TOXICITY)*weighting[0], parseFloat(keys[i].SEVERE_TOXICITY)*weighting[1],
-                    parseFloat(keys[i].IDENTITY_ATTACK)*weighting[2], parseFloat(keys[i].INSULT)*weighting[3],
-                    parseFloat(keys[i].PROFANITY)*weighting[4], parseFloat(keys[i].THREAT)*weighting[5],
-                    parseFloat(keys[i].SEXUALLY_EXPLICIT)*weighting[6]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
+                var weightedState = [
+                    parseFloat(keys[i].IDENTITY_ATTACK)*weighting[0], parseFloat(keys[i].INSULT)*weighting[1],
+                    parseFloat(keys[i].PROFANITY)*weighting[2], parseFloat(keys[i].THREAT)*weighting[3],
+                    parseFloat(keys[i].SEXUALLY_EXPLICIT)*weighting[4]
+                    ];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4];
                 arr.push(weightedState)
                 keys[i].t_score= weightedState;
             }
@@ -124,8 +125,6 @@
             tip.html(function (d){
                 var t_score = "";
                 var stateName = "";
-                var TOXICITY = "";
-                var SEVERE_TOXICITY = "";
                 var IDENTITY_ATTACK = "";
                 var INSULT = "";
                 var PROFANITY = "";
@@ -137,8 +136,6 @@
                     if (keys[i].location_name.toLowerCase() == name.toLowerCase())
                     {
                         t_score = keys[i].t_score.toFixed(2);
-                        TOXICITY = parseFloat(keys[i].TOXICITY).toFixed(2);
-                        SEVERE_TOXICITY = parseFloat(keys[i].SEVERE_TOXICITY).toFixed(2);
                         IDENTITY_ATTACK = parseFloat(keys[i].IDENTITY_ATTACK).toFixed(2);
                         INSULT = parseFloat(keys[i].INSULT).toFixed(2);
                         PROFANITY = parseFloat(keys[i].PROFANITY).toFixed(2);
@@ -148,8 +145,7 @@
                         break;
                     }
                 }
-                return_string = "State: " + stateName + "<br>" + "Score: " + t_score + "<br>" + "Toxicity: " + TOXICITY + "<br>"
-                + "Severe Toxicity: " + SEVERE_TOXICITY + "<br>" + "Identity Attack: " + IDENTITY_ATTACK
+                return_string = "State: " + stateName + "<br>" + "Score: " + t_score + "<br>" + "Identity Attack: " + IDENTITY_ATTACK
                 + "<br>" + "Insult: " + INSULT + "<br>" + "Profanity: " + PROFANITY + "<br>" + "Threat: " + THREAT
                 + "<br>" + "Sexually Explicit: " + SEXUALLY_EXPLICIT;
                 return return_string;
@@ -185,11 +181,12 @@
             var arr = [];
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
             for(i = 0; i<stateData.length; i++){
-                var weightedState = [parseFloat(stateData[i].TOXICITY)*weighting[0], parseFloat(stateData[i].SEVERE_TOXICITY)*weighting[1],
-                    parseFloat(stateData[i].IDENTITY_ATTACK)*weighting[2], parseFloat(stateData[i].INSULT)*weighting[3],
-                    parseFloat(stateData[i].PROFANITY)*weighting[4], parseFloat(stateData[i].THREAT)*weighting[5],
-                    parseFloat(stateData[i].SEXUALLY_EXPLICIT)*weighting[6]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
+                var weightedState = [
+                    parseFloat(stateData[i].IDENTITY_ATTACK)*weighting[0], parseFloat(stateData[i].INSULT)*weighting[1],
+                    parseFloat(stateData[i].PROFANITY)*weighting[2], parseFloat(stateData[i].THREAT)*weighting[3],
+                    parseFloat(stateData[i].SEXUALLY_EXPLICIT)*weighting[4]
+                    ];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4];
                 arr.push(weightedState)
                 stateData[i].t_score= weightedState;
             }
@@ -273,11 +270,12 @@
         {
             var arr = [];
             for(i = 0; i<data.length; i++){
-                var weightedState = [parseFloat(data[i].TOXICITY)*weighting[0], parseFloat(data[i].SEVERE_TOXICITY)*weighting[1],
-                    parseFloat(data[i].IDENTITY_ATTACK)*weighting[2], parseFloat(data[i].INSULT)*weighting[3],
-                    parseFloat(data[i].PROFANITY)*weighting[4], parseFloat(data[i].THREAT)*weighting[5],
-                    parseFloat(data[i].SEXUALLY_EXPLICIT)*weighting[6]];
-                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4] + weightedState[5] + weightedState[6];
+                var weightedState = [
+                    parseFloat(data[i].IDENTITY_ATTACK)*weighting[0], parseFloat(data[i].INSULT)*weiSEVEREghting[1],
+                    parseFloat(data[i].PROFANITY)*weighting[2], parseFloat(data[i].THREAT)*weighting[3],
+                    parseFloat(data[i].SEXUALLY_EXPLICIT)*weighting[4]
+                    ];
+                weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4];
                 arr.push(weightedState)
                 data[i].t_score= weightedState;
             }
