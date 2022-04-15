@@ -10,7 +10,7 @@
         const padding = 50;
         const adj = 80;
 
-        svg_map = d3.select("div").append("svg")
+        let svg_map = d3.select("div").append("svg")
         .attr("id", "svg_map")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
@@ -23,7 +23,7 @@
         .style("margin", margin)
         .classed("svg-content", true);
 
-        svg_graph = d3
+        let svg_graph_all = d3
             .select("body")
             .append("div")
             .attr("id", "container2")
@@ -43,6 +43,27 @@
             .append("g")
             .attr("id", "container_2");
 
+        let svg_graph_top_5 = d3
+            .select("body")
+            .append("div")
+            .attr("id", "container3")
+            .attr("class", "svg-container")
+            .append("svg")
+            .attr("id", "bar_chart")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "-"
+                + adj*2 + " -"
+                + adj + " "
+                + (width + adj*4) + " "
+                + (height + adj*4))
+            .attr("width", width)
+            .style("padding", padding + 050)
+            .style("margin", margin)
+            .classed("svg-content", true)
+            .append("g")
+            .attr("id", "container_3");
+        
+
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
             .scale(600);
         var path = d3.geoPath().projection(projection);
@@ -59,9 +80,11 @@
             inputs.on('change', function(d){
                 createMapAndLegend(stateData, usMap);
                 createNationalGraph(stateData)
+                createTopFiveGraphs(stateData)
             });
             createMapAndLegend(stateData, usMap);
             createNationalGraph(stateData)
+            createTopFiveGraphs(stateData)
         }
 
         function createMapAndLegend(keys, usMap){
@@ -156,8 +179,8 @@
 
         function createNationalGraph(stateData)
         {
-            d3.select('#container2').remove();
-            svg_graph = d3
+            d3.select("body").select('#container2').remove();
+            svg_graph_all = d3
                 .select("body")
                 .append("div")
                 .attr("id", "container2")
@@ -190,7 +213,7 @@
                 arr.push(weightedState)
                 stateData[i].t_score= weightedState;
             }
-
+            
             var sortedStateData = stateData.sort(function(a, b){
                 return b.t_score - a.t_score;
             });
@@ -200,10 +223,10 @@
                     .domain([0, d3.max(sortedStateData, function(d){
                         return d.t_score;
                     })]);
-            
+
             var yBarScale = d3.scaleBand()
                     .range([0, height])
-                    .domain(sortedStateData.map(function(d){console.log(d);return d.location_name}));
+                    .domain(sortedStateData.map(function(d){return d.location_name}));
 
             let xbar_axis = d3.axisBottom(xBarScale)
             .tickSize(-height);
@@ -211,7 +234,6 @@
             let container2 = d3.select("#container_2");
 
             container2.select("#bars").remove();
-            console.log(sortedStateData)
             container2.append("g")
                     .attr("id", "bars")
                     .selectAll("chart_bars")
@@ -227,7 +249,7 @@
                     })
                     .attr("height", ((height)/sortedStateData.length - 2))
                     .attr("fill", "#ff1493");
-            
+
             container2.append("g")
                     .attr("class", "axis")
                     .attr("transform", "translate(0," + (height) + ")")
@@ -264,6 +286,137 @@
                     .attr("font-size", "14px")
                     .attr("font-family", "Arial Black")
                     .text("States"); 
+        }
+
+        function createTopFiveGraphs(stateData)
+        {
+            d3.select("body").select('#container3').remove();
+            let graphDiv = d3
+                .select("body")
+                .append("div")
+                .attr("id", "container3")
+                .attr("class", "svg-container");
+
+            var IDENTITY_ATTACK_TOP_5 = stateData.sort(function(a, b){return b.IDENTITY_ATTACK - a.IDENTITY_ATTACK}).slice(0,5);
+            var IDENTITY_ATTACK_BOTTOM_5 = stateData.sort(function(a, b){return a.IDENTITY_ATTACK - b.IDENTITY_ATTACK}).slice(0,5);
+            var INSULT_TOP_5 = stateData.sort(function(a, b){return b.INSULT - a.INSULT}).slice(0,5);
+            var INSULT_BOTTOM_5 = stateData.sort(function(a, b){return a.INSULT - b.INSULT}).slice(0,5);
+            var PROFANITY_TOP_5 = stateData.sort(function(a, b){return b.PROFANITY - a.PROFANITY}).slice(0,5);
+            var PROFANITY_BOTTOM_5 = stateData.sort(function(a, b){return a.PROFANITY - b.PROFANITY}).slice(0,5);
+            var THREAT_TOP_5 = stateData.sort(function(a, b){return b.THREAT - a.THREAT}).slice(0,5);
+            var THREAT_BOTTOM_5 = stateData.sort(function(a, b){return a.THREAT - b.THREAT}).slice(0,5);
+            var SEXUALLY_EXPLICIT_TOP_5 = stateData.sort(function(a, b){return b.SEXUALLY_EXPLICIT - a.SEXUALLY_EXPLICIT}).slice(0,5);
+            var SEXUALLY_EXPLICIT_BOTTOM_5 = stateData.sort(function(a, b){return a.SEXUALLY_EXPLICIT - b.SEXUALLY_EXPLICIT}).slice(0,5);
+
+            var graphData = [IDENTITY_ATTACK_TOP_5, IDENTITY_ATTACK_BOTTOM_5, INSULT_TOP_5, INSULT_BOTTOM_5, PROFANITY_TOP_5, PROFANITY_BOTTOM_5, THREAT_TOP_5, THREAT_BOTTOM_5, SEXUALLY_EXPLICIT_TOP_5, SEXUALLY_EXPLICIT_BOTTOM_5]
+
+            var graphDataKeys = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'THREAT', 'SEXUALLY_EXPLICIT']
+
+            for(let i = 0; i < graphData.length; i++){
+                graphWidth = width/3;
+                graphHeight = height/10;
+                graphPadding = 50
+                graphMargin = 10
+                horGap = 10
+                
+
+                graphDiv.append("svg")
+                    .attr("id", "bar_chart")
+                    .attr("preserveAspectRatio", "xMinYMin meet")
+                    .attr("viewBox", "-"
+                        + adj + " -"
+                        + adj/2 + " "
+                        + (graphWidth + adj*2) + " "
+                        + (graphHeight + adj*4))
+                    .attr("width", graphWidth)
+                    .attr("height", graphHeight*10)
+                    .style("padding", graphPadding)
+                    .style("margin", graphMargin)
+                    .classed("svg-content", true)
+                    .append("g")
+                    .attr("id", "container_3_" + i)
+
+                var xBarScale = d3.scaleLinear()
+                    .range([0, graphWidth])
+                    .domain([0, d3.max(graphData[i], function(d){
+                        return d[graphDataKeys[Math.floor(i/2)]];
+                    })]);
+
+                var yBarScale = d3.scaleBand()
+                    .range([0, graphHeight*2])
+                    .domain(graphData[i].map(function(d){return d.location_name}));
+
+                let xbar_axis = d3.axisBottom(xBarScale)
+                    .tickSize(-graphHeight*2);
+
+                let container = graphDiv.select("#container_3_" + i);
+
+                container.select("#bars").remove();
+
+                container.append("g")
+                        .attr("id", "bars")
+                        .selectAll("chart_bars")
+                        .data(graphData[i])
+                        .enter()
+                        .append("rect")
+                        .attr("x", xBarScale(0))
+                        .attr("y", function(d){ 
+                            return yBarScale(d.location_name)
+                        })
+                        .attr("width", function(d){
+                            return xBarScale(d[graphDataKeys[Math.floor(i/2)]]) - xBarScale(0)
+                        })
+                        .attr("height", (graphHeight * 2 / 5) - 10)
+                        .attr("fill", "#ff1493");
+                
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(0," + (graphHeight*2) + ")")
+                        .attr("id","x-axis-bars")
+                        .call(xbar_axis);
+
+                let title = ""
+                if(i % 2 == 0){
+                    title = "Top 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
+                }
+                else{
+                    title = "Bottom 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
+                }
+                container.append("text")
+                        .attr("id", "bar_x_axis_label")
+                        .attr("x", (graphWidth / 2) - 100)
+                        .attr("y", -20)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text(title);
+
+                let ybar_axis = d3.axisLeft()
+                        .scale(yBarScale);
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", 'translate(0,0)')
+                        .attr("id", "y-axis-bars")
+                        .call(ybar_axis);
+
+                container.append("text")
+                        .attr("id", "bar_y_axis_label")
+                        .attr("transform", "rotate(-90)")
+                        .attr("x", -(graphHeight*2) + 50)
+                        .attr("y", -70)
+                        .attr("text-anchor", "end")
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text("States"); 
+            }
+
+            
+
+            
         }
 
         function WeightScores(weights, data)
