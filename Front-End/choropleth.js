@@ -175,27 +175,121 @@
                 var THREAT = "";
                 var SEXUALLY_EXPLICIT = "";
                 var name = d.properties.NAME;
+                // mins and maxes for our letter grading
+                min_id_attack = "1000.0";
+                min_insult = "1000.0";
+                min_threat = "1000.0";
+                min_sexy = "1000.0";
+                min_profanity = "1000.0";
+                max_id_attack = "-1000.0";
+                max_insult = "-1000.0";
+                max_threat = "-1000.0";
+                max_sexy = "-1000.0";
+                max_profanity = "-1000.0";
+                for(i = 0; i < keys.length; i++)
+                {
+                    id_atk = parseFloat(keys[i].IDENTITY_ATTACK).toFixed(4);
+                    insult = parseFloat(keys[i].INSULT).toFixed(4);
+                    profanity = parseFloat(keys[i].PROFANITY).toFixed(4);
+                    threat = parseFloat(keys[i].THREAT).toFixed(4);
+                    sexy = parseFloat(keys[i].SEXUALLY_EXPLICIT).toFixed(4);
+
+                    min_id_attack = Math.min(min_id_attack, id_atk);
+                    min_insult = Math.min(min_insult, insult);
+                    min_profanity = Math.min(min_profanity, profanity);
+                    min_threat = Math.min(min_threat, threat);
+                    min_sexy = Math.min(min_sexy, sexy);
+
+                    max_id_attack = Math.max(max_id_attack, id_atk);
+                    max_insult = Math.max(max_insult, insult);
+                    max_profanity = Math.max(max_profanity, profanity);
+                    max_threat = Math.max(max_threat, threat);
+                    max_sexy = Math.max(max_sexy, sexy);
+                }
+
+
+
                 for(i = 0; i < keys.length; i++)
                 {
                     if (keys[i].location_name.toLowerCase() == name.toLowerCase())
                     {
-                        t_score = keys[i].t_score.toFixed(2);
-                        IDENTITY_ATTACK = parseFloat(keys[i].IDENTITY_ATTACK).toFixed(2);
-                        INSULT = parseFloat(keys[i].INSULT).toFixed(2);
-                        PROFANITY = parseFloat(keys[i].PROFANITY).toFixed(2);
-                        THREAT = parseFloat(keys[i].THREAT).toFixed(2);
-                        SEXUALLY_EXPLICIT = parseFloat(keys[i].SEXUALLY_EXPLICIT).toFixed(2);
+                        IDENTITY_ATTACK = parseFloat(keys[i].IDENTITY_ATTACK).toFixed(4);
+                        INSULT = parseFloat(keys[i].INSULT).toFixed(4);
+                        PROFANITY = parseFloat(keys[i].PROFANITY).toFixed(4);
+                        THREAT = parseFloat(keys[i].THREAT).toFixed(4);
+                        SEXUALLY_EXPLICIT = parseFloat(keys[i].SEXUALLY_EXPLICIT).toFixed(4);
+                        // scale
+                        // (xi – min(x)) / (max(x) – min(x)) * 100
+                        IDENTITY_ATTACK = (IDENTITY_ATTACK - min_id_attack)/(max_id_attack - min_id_attack)*100
+                        IDENTITY_ATTACK = letterGrade(IDENTITY_ATTACK)
+
+                        INSULT = (INSULT - min_insult)/(max_insult - min_insult)*100
+                        INSULT = letterGrade(INSULT)
+
+                        PROFANITY = (PROFANITY - min_profanity)/(max_profanity - min_profanity)*100
+                        PROFANITY = letterGrade(PROFANITY)
+
+                        SEXUALLY_EXPLICIT = (SEXUALLY_EXPLICIT - min_sexy)/(max_sexy - min_sexy)*100
+                        SEXUALLY_EXPLICIT = letterGrade(SEXUALLY_EXPLICIT)
+
+                        THREAT = (THREAT - min_threat)/(max_threat - min_threat)*100
+                        THREAT = letterGrade(THREAT)
+
                         stateName = name;
                         break;
                     }
                 }
-                return_string = "State: " + stateName + "<br>" + "Score: " + t_score + "<br>" + "Identity Attack: " + IDENTITY_ATTACK
-                + "<br>" + "Insult: " + INSULT + "<br>" + "Profanity: " + PROFANITY + "<br>" + "Threat: " + THREAT
-                + "<br>" + "Sexually Explicit: " + SEXUALLY_EXPLICIT;
-                return return_string;
+                d3.select("form#happyPanda").select("input#State")._groups[0][0].value = stateName;
+                d3.select("form#happyPanda").select("input#ID_Attack")._groups[0][0].value = IDENTITY_ATTACK;
+                d3.select("form#happyPanda").select("input#Insult")._groups[0][0].value = INSULT;
+                d3.select("form#happyPanda").select("input#Profanity")._groups[0][0].value = PROFANITY;
+                d3.select("form#happyPanda").select("input#Threat")._groups[0][0].value = THREAT;
+                d3.select("form#happyPanda").select("input#Sexy")._groups[0][0].value = SEXUALLY_EXPLICIT;
+                return "";
             })
 
             svg_map.call(tip)
+        }
+
+        function letterGrade(value)
+        {
+            if (value >= 89.0)
+            {
+                return "F";
+            }
+            else if (value < 89.0 && value >= 78.0)
+            {
+                return "D-";
+            }
+            else if (value < 78.0 && value >= 67.0)
+            {
+                return "D";
+            }
+            else if (value < 67.0 && value >= 56.0)
+            {
+                return "C-";
+            }
+            else if (value < 56.0 && value >= 45.0)
+            {
+                return "C";
+            }
+            else if (value < 45.0 && value >= 34.0)
+            {
+                return "B-";
+            }
+            else if (value < 34.0 && value >= 23.0)
+            {
+                return "B";
+            }
+            else if (value < 23.0 && value >= 12.0)
+            {
+                return "A-";
+            }
+            else
+            {
+                return "A";
+            }
+
         }
 
         function createNationalGraph(stateData)
