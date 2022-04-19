@@ -10,6 +10,8 @@
         const padding = 50;
         const adj = 80;
 
+        var selectedStates = []
+
         let svg_map = d3.select("div").append("svg")
         .attr("id", "svg_map")
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -41,7 +43,7 @@
             .style("margin", margin)
             .classed("svg-content", true)
             .append("g")
-            .attr("id", "container_2");
+            .attr("id", "container2_2");
 
         let svg_graph_top_5 = d3
             .select("body")
@@ -61,8 +63,25 @@
             .style("margin", margin)
             .classed("svg-content", true)
             .append("g")
-            .attr("id", "container_3");
-        
+            .attr("id", "container3");
+
+        let svg_state_graph = d3
+            .select("body")
+            .append("div")
+            .attr("id", "container4")
+            .attr("class", "svg-container")
+            .append("svg")
+            .attr("id", "bar_chart")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "-"
+                + adj*2 + " -"
+                + adj + " "
+                + (width + adj*4) + " "
+                + (height + adj*4))
+            .attr("width", width)
+            .style("padding", padding + 050)
+            .style("margin", margin)
+            .classed("svg-content", true)
 
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
             .scale(600);
@@ -134,8 +153,7 @@
                         }
                     }
                     return "#ccc";
-            }).on("mouseover", tip.show).on("mouseout", tip.hide);
-            console.log(height)
+            }).on("mouseover", tip.show).on("mouseout", tip.hide).on('click', function(d){drawStateGraph(d, keys)});
             var legend = svg_map.append("g")
                 .attr("id", "legend")
                 .attr("class", "legendaryFail").attr("transform", "translate(" + (50) + ")");
@@ -198,7 +216,7 @@
                 .style("margin", margin)
                 .classed("svg-content", true)
                 .append("g")
-                .attr("id", "container_2");
+                .attr("id", "container2_2");
 
             var weighting = ReturnWeights();
             var arr = [];
@@ -231,7 +249,7 @@
             let xbar_axis = d3.axisBottom(xBarScale)
             .tickSize(-height);
 
-            let container2 = d3.select("#container_2");
+            let container2 = d3.select("#container2_2");
 
             container2.select("#bars").remove();
             container2.append("g")
@@ -334,7 +352,7 @@
                     .style("margin", graphMargin)
                     .classed("svg-content", true)
                     .append("g")
-                    .attr("id", "container_3_" + i)
+                    .attr("id", "container3_" + i)
 
                 var xBarScale = d3.scaleLinear()
                     .range([0, graphWidth])
@@ -349,11 +367,351 @@
                 let xbar_axis = d3.axisBottom(xBarScale)
                     .tickSize(-graphHeight*2);
 
-                let container = graphDiv.select("#container_3_" + i);
+                let container = graphDiv.select("#container3_" + i);
 
                 container.select("#bars").remove();
 
                 container.append("g")
+                        .attr("id", "bars")
+                        .selectAll("chart_bars")
+                        .data(graphData[i])
+                        .enter()
+                        .append("rect")
+                        .attr("x", xBarScale(0))
+                        .attr("y", function(d){ 
+                            return yBarScale(d.location_name)
+                        })
+                        .attr("width", function(d){
+                            return xBarScale(d[graphDataKeys[Math.floor(i/2)]]) - xBarScale(0)
+                        })
+                        .attr("height", (graphHeight * 2 / 5) - 10)
+                        .attr("fill", "#ff1493");
+                
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(0," + (graphHeight*2) + ")")
+                        .attr("id","x-axis-bars")
+                        .call(xbar_axis);
+
+                let title = ""
+                if(i % 2 == 0){
+                    title = "Top 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
+                }
+                else{
+                    title = "Bottom 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
+                }
+
+                container.append("text")
+                        .attr("id", "bar_x_axis_label")
+                        .attr("x", (graphWidth / 2) - 100)
+                        .attr("y", -20)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text(title);
+
+                container.append("text")
+                        .attr("id", "bar_x_axis_label")
+                        .attr("x", (graphWidth / 2) - 50)
+                        .attr("y", graphHeight + 70)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text('Toxicity Units');
+
+                let ybar_axis = d3.axisLeft()
+                        .scale(yBarScale);
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", 'translate(0,0)')
+                        .attr("id", "y-axis-bars")
+                        .call(ybar_axis);
+
+                container.append("text")
+                        .attr("id", "bar_y_axis_label")
+                        .attr("transform", "rotate(-90)")
+                        .attr("x", -(graphHeight*2) + 50)
+                        .attr("y", -70)
+                        .attr("text-anchor", "end")
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text("States"); 
+            }
+        }
+
+        function drawStateGraph(selectedState, stateData){
+            d3.select("body").select('#container4_1').remove();
+            var svg_state_graph = d3
+                .select("body")
+                .select("#container4")
+                .select("#bar_chart")
+                .append("g")
+                .attr("id", "container4_1");
+
+            var tempData = {}
+            var isOneState = true
+            var labels = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'SEXUALLY_EXPLICIT', 'THREAT']
+            graphDataDict = []
+            if(selectedStates.length == 0){
+                selectedStates.push(selectedState.properties.NAME)
+                tempData = stateData.filter(function(d){
+                    return d.location_name == selectedStates[0]
+                })[0]
+                var graphData = [[labels],[parseFloat(tempData.IDENTITY_ATTACK).toFixed(2),parseFloat(tempData.INSULT).toFixed(2),parseFloat(tempData.PROFANITY).toFixed(2),parseFloat(tempData.SEXUALLY_EXPLICIT).toFixed(2),parseFloat(tempData.THREAT).toFixed(2)]]
+                for(var i = 0; i < labels.length; i++){
+                    graphDataDict.push({label: labels[i], value: graphData[1][i]})
+                }
+            }
+            else if(selectedStates[0] == selectedState.properties.NAME){
+                // do nothing
+            }
+            else if(selectedStates.length == 1){
+                selectedStates.push(selectedStates[0])
+                selectedStates[0] = selectedState.properties.NAME
+                tempData = stateData.filter(function(d){
+                    return d.location_name == selectedStates[0]
+                })
+                tempData.push(stateData.filter(function(d){
+                    return d.location_name == selectedStates[1]
+                })[0])
+                var graphData = [[labels],[parseFloat(tempData[0].IDENTITY_ATTACK).toFixed(2),parseFloat(tempData[0].INSULT).toFixed(2),parseFloat(tempData[0].PROFANITY).toFixed(2),parseFloat(tempData[0].SEXUALLY_EXPLICIT).toFixed(2),parseFloat(tempData[0].THREAT).toFixed(2)], [parseFloat(tempData[1].IDENTITY_ATTACK).toFixed(2),parseFloat(tempData[1].INSULT).toFixed(2),parseFloat(tempData[1].PROFANITY).toFixed(2),parseFloat(tempData[1].SEXUALLY_EXPLICIT).toFixed(2),parseFloat(tempData[1].THREAT).toFixed(2)]]
+                for(var i = 0; i < labels.length; i++){
+                    graphDataDict.push({label: labels[i], value1: graphData[1][i], value2: graphData[2][i]})
+                }
+                isOneState = false
+            }
+            else{
+                selectedStates[1] = selectedStates[0]
+                selectedStates[0] = selectedState.properties.NAME
+                tempData = stateData.filter(function(d){
+                    return d.location_name == selectedStates[0]
+                })
+                tempData.push(stateData.filter(function(d){
+                    return d.location_name == selectedStates[1]
+                })[0])
+                var graphData = [[labels],[parseFloat(tempData[0].IDENTITY_ATTACK).toFixed(2),parseFloat(tempData[0].INSULT).toFixed(2),parseFloat(tempData[0].PROFANITY).toFixed(2),parseFloat(tempData[0].SEXUALLY_EXPLICIT).toFixed(2),parseFloat(tempData[0].THREAT).toFixed(2)], [parseFloat(tempData[1].IDENTITY_ATTACK).toFixed(2),parseFloat(tempData[1].INSULT).toFixed(2),parseFloat(tempData[1].PROFANITY).toFixed(2),parseFloat(tempData[1].SEXUALLY_EXPLICIT).toFixed(2),parseFloat(tempData[1].THREAT).toFixed(2)]]
+                for(var i = 0; i < labels.length; i++){
+                    graphDataDict.push({label: labels[i], value1: graphData[1][i], value2: graphData[2][i]})
+                }
+                isOneState = false
+            }            
+
+            if(isOneState){
+                var xBarScale = d3.scaleLinear()
+                    .range([0, width])
+                    .domain([0, d3.max(graphData[1])]);
+
+                var yBarScale = d3.scaleBand()
+                    .range([0, height])
+                    .domain(graphDataDict.map(function(d){return d.label}));
+
+                let xbar_axis = d3.axisBottom(xBarScale)
+                    .tickSize(-height);
+
+                svg_state_graph.append("g")
+                    .attr("id", "bars")
+                    .selectAll("chart_bars")
+                    .data(graphDataDict)
+                    .enter()
+                    .append("rect")
+                    .attr("x", xBarScale(0))
+                    .attr("y", function(d){ 
+                        return yBarScale(d.label)
+                    })
+                    .attr("width", function(d){
+                        return xBarScale(d.value) - xBarScale(0)
+                    })
+                    .attr("height", (height / 5) - 10)
+                    .attr("fill", "#ff1493");
+
+                let container = d3.select("#container4_1");
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(0," + (height) + ")")
+                        .attr("id","x-axis-bars")
+                        .call(xbar_axis);
+
+                let title = selectedStates[0] + " Toxicity Breakdown"
+
+                container.append("text")
+                        .attr("id", "bar_x_axis_label")
+                        .attr("x", (width)/2 - 100)
+                        .attr("y", height + 30)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text('Toxicity Units');
+
+                container.append("text")
+                        .attr("id", "title")
+                        .attr("x", (width)/2 - 100)
+                        .attr("y", -20)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text(title);
+
+                let ybar_axis = d3.axisLeft()
+                        .scale(yBarScale);
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", 'translate(0,0)')
+                        .attr("id", "y-axis-bars")
+                        .call(ybar_axis);
+
+                container.append("text")
+                        .attr("id", "bar_y_axis_label")
+                        .attr("transform", "rotate(-90)")
+                        .attr("x", -(height) / 2)
+                        .attr("y", -135)
+                        .attr("text-anchor", "end")
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text("Categories"); 
+            }
+            else{
+                var xBarScale = d3.scaleLinear()
+                    .range([0, width])
+                    .domain([0, d3.max(graphData[1].concat(graphData[2]))]);
+
+                var yBarScale = d3.scaleBand()
+                    .range([0, height])
+                    .domain(graphDataDict.map(function(d){return d.label}));
+
+                let xbar_axis = d3.axisBottom(xBarScale)
+                    .tickSize(-height);
+
+                svg_state_graph.append("g")
+                    .attr("id", "bars1")
+                    .selectAll("chart_bars1")
+                    .data(graphDataDict)
+                    .enter()
+                    .append("rect")
+                    .attr("x", xBarScale(0))
+                    .attr("y", function(d){ 
+                        return yBarScale(d.label)
+                    })
+                    .attr("width", function(d){
+                        return xBarScale(d.value1) - xBarScale(0)
+                    })
+                    .attr("height", ((height / 5) - 10)/2)
+                    .attr("fill", "#0E16E9");
+
+                svg_state_graph.append("g")
+                    .attr("id", "bars2")
+                    .selectAll("chart_bars2")
+                    .data(graphDataDict)
+                    .enter()
+                    .append("rect")
+                    .attr("x", xBarScale(0))
+                    .attr("y", function(d){ 
+                        return yBarScale(d.label) + ((height / 5) - 10) / 2
+                    })
+                    .attr("width", function(d){
+                        return xBarScale(d.value2) - xBarScale(0)
+                    })
+                    .attr("height", ((height / 5) - 10) / 2)
+                    .attr("fill", "#FF0101");
+
+                let container = d3.select("#container4_1");
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(0," + (height) + ")")
+                        .attr("id","x-axis-bars")
+                        .call(xbar_axis);
+
+                let title = selectedStates[0] + " vs. " + selectedStates[1] + " Toxicity Breakdown"
+
+                container.append("text")
+                        .attr("id", "bar_x_axis_label")
+                        .attr("x", (width)/2 - 100)
+                        .attr("y", height + 30)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text('Toxicity Units');
+
+                container.append("text")
+                        .attr("id", "title")
+                        .attr("x", (width)/2 - 100)
+                        .attr("y", -20)
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text(title);
+
+                let ybar_axis = d3.axisLeft()
+                        .scale(yBarScale);
+
+                container.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", 'translate(0,0)')
+                        .attr("id", "y-axis-bars")
+                        .call(ybar_axis);
+
+                container.append("text")
+                        .attr("id", "bar_y_axis_label")
+                        .attr("transform", "rotate(-90)")
+                        .attr("x", -(height) / 2)
+                        .attr("y", -135)
+                        .attr("text-anchor", "end")
+                        .attr("fill", "black")
+                        .attr("font-weight", "normal")
+                        .attr("font-size", "14px")
+                        .attr("font-family", "Arial Black")
+                        .text("Categories"); 
+
+                var ordinal = d3.scaleOrdinal()
+                        .domain([selectedStates[0], selectedStates[1]])
+                        .range(["#0E16E9", "#FF0101"]);
+                
+                svg_state_graph.append("g")
+                        .attr("class", "legendOrdinal")
+                        .attr("transform", "translate(" + (width + 25) + "," + height/2 + ")")
+                        .attr("x", width + 25)
+                        .attr("y", height / 2);
+                
+                var legendOrdinal = d3.legendColor()
+                        .shape("path", d3.symbol().size(150)())
+                        .shapePadding(10)
+                        .cellFilter(function(d){ return d.label !== "e" })
+                        .scale(ordinal);
+                
+                svg_state_graph.select(".legendOrdinal")
+                        .call(legendOrdinal);
+                
+                d3.select('.legendCells')
+                        .attr("transform", "translate(" + width + ", " + height / 2 + ")")
+            }
+/*
+                var xBarScale = d3.scaleLinear()
+                    .range([0, width])
+                    .domain([0, d3.max(graphData[i], function(d){
+                        return d[graphDataKeys[Math.floor(i/2)]];
+                    })]);
+
+                var yBarScale = d3.scaleBand()
+                    .range([0, height*2])
+                    .domain(graphData[i].map(function(d){return d.location_name}));
+
+                let xbar_axis = d3.axisBottom(xBarScale)
+                    .tickSize(-graphHeight*2);
+
+                svg_state_graph.append("g")
                         .attr("id", "bars")
                         .selectAll("chart_bars")
                         .data(graphData[i])
@@ -412,11 +770,7 @@
                         .attr("font-size", "14px")
                         .attr("font-family", "Arial Black")
                         .text("States"); 
-            }
-
-            
-
-            
+                        */
         }
 
         function WeightScores(weights, data)
