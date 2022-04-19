@@ -18,7 +18,6 @@
 
     <! –– TODO 2: Update form in-line with weights update (once we narrow down what fields we'd like to use to establish toxicity). -->
     <form style = "position:absolute; left:0px; top:140px" id="sundae">
-        <! –– Adjust Toxicity Weights:</br>
         <label for="field0">Identity Attack:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field0"></br>
         <label for="field1">Insult:</label></br>
@@ -31,17 +30,17 @@
         <input type="range" min="0" max="10" value="5" class="slider" id="field4"></br>
     </form>
     <form style = "position:absolute; left:660px; top:140px" id="happyPanda">
-        <label for="State">State:</label>
+        <label for="State">State:</label><br>
         <input type="text" id="State" name="State" value="" readonly><br>
-        <label for="ID_Attack">Identity Attack:</label>
+        <label for="ID_Attack">Identity Attack:</label><br>
         <input type="text" id="ID_Attack" name="ID_Attack" value="" readonly><br>
-        <label for="Insult">Insult:</label>
+        <label for="Insult">Insult:</label><br>
         <input type="text" id="Insult" name="Insult" value="" readonly><br>
-        <label for="Profanity">Profanity:</label>
+        <label for="Profanity">Profanity:</label><br>
         <input type="text" id="Profanity" name="Profanity" value="" readonly><br>
-        <label for="Threat">Threat:</label>
+        <label for="Threat">Threat:</label><br>
         <input type="text" id="Threat" name="Threat" value="" readonly><br>
-        <label for="Sexy">Sexually Explicit:</label>
+        <label for="Sexy">Sexually Explicit:</label><br>
         <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
     </form>
     <script type="text/javascript" src="./choropleth.js"></script>
