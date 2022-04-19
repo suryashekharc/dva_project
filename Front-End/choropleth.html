@@ -13,12 +13,12 @@
     <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
 </head>
 
-<body>
+<body style="background-color:grey;">
     <div id="container" class="svg-container"></div>
 
     <! –– TODO 2: Update form in-line with weights update (once we narrow down what fields we'd like to use to establish toxicity). -->
-    <form style = "position:absolute; left:0px; top:0px" id="sundae">
-        Adjust Toxicity Weights:</br>
+    <form style = "position:absolute; left:0px; top:140px" id="sundae">
+        <! –– Adjust Toxicity Weights:</br>
         <label for="field0">Identity Attack:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field0"></br>
         <label for="field1">Insult:</label></br>
@@ -29,6 +29,20 @@
         <input type="range" min="0" max="10" value="5" class="slider" id="field3"></br>
         <label for="field4">Sexually Explicit:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field4"></br>
+    </form>
+    <form style = "position:absolute; left:660px; top:140px" id="happyPanda">
+        <label for="State">State:</label>
+        <input type="text" id="State" name="State" value="" readonly><br>
+        <label for="ID_Attack">Identity Attack:</label>
+        <input type="text" id="ID_Attack" name="ID_Attack" value="" readonly><br>
+        <label for="Insult">Insult:</label>
+        <input type="text" id="Insult" name="Insult" value="" readonly><br>
+        <label for="Profanity">Profanity:</label>
+        <input type="text" id="Profanity" name="Profanity" value="" readonly><br>
+        <label for="Threat">Threat:</label>
+        <input type="text" id="Threat" name="Threat" value="" readonly><br>
+        <label for="Sexy">Sexually Explicit:</label>
+        <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
     </form>
     <script type="text/javascript" src="./choropleth.js"></script>
      

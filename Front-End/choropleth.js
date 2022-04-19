@@ -156,9 +156,12 @@
             }).on("mouseover", tip.show).on("mouseout", tip.hide).on('click', function(d){drawStateGraph(d, keys)});
             var legend = svg_map.append("g")
                 .attr("id", "legend")
-                .attr("class", "legendaryFail").attr("transform", "translate(" + (50) + ")");
+                .attr("class", "legendaryFail")
+                .attr("transform", "translate(" + (50) + ")");
             
-            var legends = d3.legendColor().scale(colors).labelFormat(d3.format(".2f"));
+            var legends = d3.legendColor()
+                .scale(colors)
+                .labels(["A", "A-", "B", "B-", "C", "C-", "D", "D-", "F"]);//.labelFormat(d3.format(".2f"));
 
             svg_map.select(".legendaryFail").call(legends);
 
