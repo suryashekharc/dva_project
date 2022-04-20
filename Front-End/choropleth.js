@@ -1,6 +1,12 @@
    // Citation: https://eric.clst.org/tech/usgeojson/
         // For geojson file of US
         /* Initialize tooltip */
+        
+
+
+
+
+
         tip = d3.tip().attr("id", "tooltip").attr('class', 'd3-tip');
 
         // Define SVG/Margins/Yada Yada
@@ -84,7 +90,7 @@
             .classed("svg-content", true)
 
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
-            .scale(600);
+            .scale(900);
         var path = d3.geoPath().projection(projection);
         var colors = d3.scaleQuantile().range(d3.schemeReds[9]);
 
@@ -95,7 +101,7 @@
             d3.json("./us_map.json")
         ]).then(d => { ready(d[0], d[1])});
         function ready(stateData, usMap) {
-            var inputs = d3.select("form#sundae");
+            var inputs = d3.select("form#sundae");            
             inputs.on('change', function(d){
                 createMapAndLegend(stateData, usMap);
                 createNationalGraph(stateData)
@@ -157,7 +163,7 @@
             var legend = svg_map.append("g")
                 .attr("id", "legend")
                 .attr("class", "legendaryFail")
-                .attr("transform", "translate(" + (50) + ")");
+                .attr("transform", "translate(" + (50) + ","+ (0)+ ")");
             
             var legends = d3.legendColor()
                 .scale(colors)
@@ -206,9 +212,6 @@
                     max_threat = Math.max(max_threat, threat);
                     max_sexy = Math.max(max_sexy, sexy);
                 }
-
-
-
                 for(i = 0; i < keys.length; i++)
                 {
                     if (keys[i].location_name.toLowerCase() == name.toLowerCase())
@@ -239,13 +242,20 @@
                         break;
                     }
                 }
-                d3.select("form#happyPanda").select("input#State")._groups[0][0].value = stateName;
-                d3.select("form#happyPanda").select("input#ID_Attack")._groups[0][0].value = IDENTITY_ATTACK;
-                d3.select("form#happyPanda").select("input#Insult")._groups[0][0].value = INSULT;
-                d3.select("form#happyPanda").select("input#Profanity")._groups[0][0].value = PROFANITY;
-                d3.select("form#happyPanda").select("input#Threat")._groups[0][0].value = THREAT;
-                d3.select("form#happyPanda").select("input#Sexy")._groups[0][0].value = SEXUALLY_EXPLICIT;
-                return "";
+                // d3.select("form#happyPanda").select("input#State")._groups[0][0].value = stateName;
+                // d3.select("form#happyPanda").select("input#ID_Attack")._groups[0][0].value = IDENTITY_ATTACK;
+                // d3.select("form#happyPanda").select("input#Insult")._groups[0][0].value = INSULT;
+                // d3.select("form#happyPanda").select("input#Profanity")._groups[0][0].value = PROFANITY;
+                // d3.select("form#happyPanda").select("input#Threat")._groups[0][0].value = THREAT;
+                // d3.select("form#happyPanda").select("input#Sexy")._groups[0][0].value = SEXUALLY_EXPLICIT;
+
+                return "<div><p>State: " + stateName + "</p>"+
+                        "<p>Identity Attack: "+ IDENTITY_ATTACK + "</p>"+
+                        "<p>Insult: "+ INSULT + "</p>"+
+                        "<p>Profanity: "+ PROFANITY + "</p>"+
+                        "<p>Threat: "+ THREAT + "</p>"+
+                        "<p>Sexually Explicit: "+ SEXUALLY_EXPLICIT + "</p>"+
+                        "</div>";
             })
 
             svg_map.call(tip)
