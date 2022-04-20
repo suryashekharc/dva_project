@@ -790,9 +790,6 @@
                 
                 svg_state_graph.select(".legendOrdinal")
                         .call(legendOrdinal);
-                
-                d3.select('.legendCells')
-                        .attr("transform", "translate(" + width + ", " + height / 2 + ")")
             }
 /*
                 var xBarScale = d3.scaleLinear()
