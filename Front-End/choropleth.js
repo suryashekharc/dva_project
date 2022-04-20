@@ -25,11 +25,14 @@
             + adj + " -"
             + adj + " "
             + (width + adj*3) + " "
-            + (height + adj*3))
+            + (height/2 + adj*3))
         .attr("width", width)
         .style("padding", padding)
         .style("margin", margin)
-        .classed("svg-content", true);
+        .classed("svg-content", true)
+        // .append("p")
+
+        
 
         let svg_graph_all = d3
             .select("body")
@@ -103,6 +106,7 @@
         function ready(stateData, usMap) {
             var inputs = d3.select("form#sundae");            
             inputs.on('change', function(d){
+                selectedStates = []
                 createMapAndLegend(stateData, usMap);
                 createNationalGraph(stateData)
                 createTopFiveGraphs(stateData)
@@ -115,18 +119,28 @@
         function createMapAndLegend(keys, usMap){
             svg_map.remove();
 
-            svg_map = d3.select("div").append("svg")
+            svg_map = d3.select("div").attr("width", width*2)
+            .append("svg")
             .attr("id", "svg_map")
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "-"
-                + adj + " -"
-                + adj + " "
-                + (width + adj*3) + " "
-                + (height + adj*3))
-            .attr("width", width)
+            // .attr("viewBox", "-"
+            //     + adj + " -"
+            //     + adj + " "
+            //     + (width + adj*3) + " "
+            //     + (height*2 + adj*3))
+            .attr("width", 2*width)
+            .attr("height", 3*height)
             .style("padding", padding)
             .style("margin", margin)
             .classed("svg-content", true);
+
+            svg_map
+            .append("text")
+            .text("CLICK ON ANY STATE TO SHOW DETAILED BREAKDOWN OF TOXICITY")
+            .attr("class", "random")
+            .attr("x", 5)
+	        .attr("y", height+padding*2);
+
             var arr = [];
             const weighting = ReturnWeights();
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
@@ -143,7 +157,7 @@
             
             colors.domain(arr);
             // draw states map
-            countries = svg_map.append("g").attr("id", "states");
+            countries = svg_map.append("g").attr("id", "states").attr("width", width);
             countries.selectAll("paths")
                 .data(usMap.features)
                 .enter().append("path")
@@ -553,12 +567,18 @@
 
         function drawStateGraph(selectedState, stateData){
             d3.select("body").select('#container4_1').remove();
-            var svg_state_graph = d3
-                .select("body")
-                .select("#container4")
-                .select("#bar_chart")
-                .append("g")
-                .attr("id", "container4_1");
+            
+            // var svg_state_graph = d3
+            //     .select("body")
+            //     .select("#container4")
+            //     .select("#bar_chart")
+            //     .append("g")
+            //     .attr("id", "container4_1");
+
+            var svg_state_graph = svg_map
+            .append("g")
+            .attr("id", "container4_1")
+            .attr("transform", "translate(" + (100) + ","+ (height+adj*2)+ ")");
 
             var tempData = {}
             var isOneState = true
@@ -610,7 +630,7 @@
 
             if(isOneState){
                 var xBarScale = d3.scaleLinear()
-                    .range([0, width])
+                    .range([0, width-20])
                     .domain([0, d3.max(graphData[1])]);
 
                 var yBarScale = d3.scaleBand()
@@ -689,7 +709,7 @@
             }
             else{
                 var xBarScale = d3.scaleLinear()
-                    .range([0, width])
+                    .range([0, width-20])
                     .domain([0, d3.max(graphData[1].concat(graphData[2]))]);
 
                 var yBarScale = d3.scaleBand()

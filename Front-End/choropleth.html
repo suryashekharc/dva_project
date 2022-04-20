@@ -15,17 +15,12 @@
             color: #fff;
             border-radius: 2px;
         }
-        #field0 {
-            background: red;
+        .random {
+            /* font-family: 'Comic Sans MS', 'Papyrus', sans-serif; */
+            font-size: 25px;
+            font-weight: bold;
+            fill: rgb(0, 0, 0);
         }
-
-            /* input[type='range']::-webkit-slider-thumb {
-            width: 6px;
-            -webkit-appearance: none;
-            height: 12px;
-            background: black;
-            border-radius: 2px;
-            } */
     </style>
 
     <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
@@ -35,7 +30,7 @@
     <div id="container" class="svg-container"></div>
 
     <! –– TODO 2: Update form in-line with weights update (once we narrow down what fields we'd like to use to establish toxicity). -->
-    <form style = "position:absolute; left:800px; top:140px" id="sundae">
+    <form style = "position:absolute; left:1000px; top:140px" id="sundae">
         <label for="field0">Identity Attack:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field0"></br>
         <label for="field1">Insult:</label></br>
