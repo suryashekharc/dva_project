@@ -867,6 +867,18 @@
         }
 
         function writeInformation(){
-            // nothing to write yet
+            d3.select("body").select('#container2').remove();
+            var svg_info = d3
+                .select("body")
+                .append("div")
+                .attr("id", "container2")
+                .html("This application is meant to analyze and visualize toxicity of state's pages within the Reddit online community.<br/><br/> \
+                    Each of the state pages are analyzed through the comments mined from them and are given toxicity scores in five categories: \
+                    Identity Attack, Insult, Profanity, Threat, and Sexually Explicit.<br/><br/> \
+                    In order to quantify the toxicity we are using \'Toxicity Units\'. These units identity the probability of a comment in that state's page \
+                    being that form of toxic.<br/><br/> \
+                    The National Graph which shows all states in order of their overall toxicity score as well as the choropleth US map take the toxicity components and \
+                    add them together based on weights the user can provide from the sliders. The choropleth converts the sum of weights into letter grades to be \
+                    more easily digestable for the user. The National Graph shows the sum in order to allow the user to understand the differences between the state scores.")
         }
 
