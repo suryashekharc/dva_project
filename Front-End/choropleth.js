@@ -123,6 +123,29 @@
             })            
         }
 
+        function createCheckBox(stateData){
+            states = stateData.map(d => {
+                return d.location_name
+            })
+            console.log(states);
+            svg_graph_all = d3
+                .select("body")
+                .append("div")
+                .attr("id", "container2")
+                .attr("class", "svg-container")
+                .style("height", "100px")
+
+            svg_graph_all.selectAll("input")
+            .data(states)
+            .enter()
+            .append("input")
+            .attr("type","checkbox")
+            .attr("id", function(d){return d})
+            .attr("value",function(d){return d})
+            .append("text")
+            .text(function(d){return d})
+        }
+
         function createMapAndLegend(keys, usMap){
             svg_map.remove();
 
@@ -334,12 +357,17 @@
 
         function createNationalGraph(stateData)
         {
+            console.log(stateData)
             d3.select("body").select('#container2').remove();
             svg_info = d3
                 .select("body")
                 .append("div")
                 .attr("id", "container2")
                 .attr("class", "svg-container")
+
+            
+
+            svg_graph_all    
                 .append("svg")
                 .attr("id", "bar_chart")
                 .attr("preserveAspectRatio", "xMinYMin meet")
