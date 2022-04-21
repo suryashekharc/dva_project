@@ -1,11 +1,6 @@
    // Citation: https://eric.clst.org/tech/usgeojson/
         // For geojson file of US
         /* Initialize tooltip */
-        
-
-
-
-
 
         tip = d3.tip().attr("id", "tooltip").attr('class', 'd3-tip');
 
@@ -20,12 +15,12 @@
 
         let svg_map = d3.select("div").append("svg")
         .attr("id", "svg_map")
-        .attr("preserveAspectRatio", "xMinYMin meet")
+        //.attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
             + adj + " -"
             + adj + " "
             + (width + adj*3) + " "
-            + (height/2 + adj*3))
+            + (height/3 + adj*2))
         .attr("width", width)
         .style("padding", padding)
         .style("margin", margin)
@@ -34,7 +29,7 @@
 
         
 
-        let svg_graph_all = d3
+        let svg_info = d3
             .select("body")
             .append("div")
             .attr("id", "container2")
@@ -54,44 +49,6 @@
             .append("g")
             .attr("id", "container2_2");
 
-        let svg_graph_top_5 = d3
-            .select("body")
-            .append("div")
-            .attr("id", "container3")
-            .attr("class", "svg-container")
-            .append("svg")
-            .attr("id", "bar_chart")
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "-"
-                + adj*2 + " -"
-                + adj + " "
-                + (width + adj*4) + " "
-                + (height + adj*4))
-            .attr("width", width)
-            .style("padding", padding + 050)
-            .style("margin", margin)
-            .classed("svg-content", true)
-            .append("g")
-            .attr("id", "container3");
-
-        let svg_state_graph = d3
-            .select("body")
-            .append("div")
-            .attr("id", "container4")
-            .attr("class", "svg-container")
-            .append("svg")
-            .attr("id", "bar_chart")
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "-"
-                + adj*2 + " -"
-                + adj + " "
-                + (width + adj*4) + " "
-                + (height + adj*4))
-            .attr("width", width)
-            .style("padding", padding + 050)
-            .style("margin", margin)
-            .classed("svg-content", true)
-
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
             .scale(900);
         var path = d3.geoPath().projection(projection);
@@ -108,12 +65,62 @@
             inputs.on('change', function(d){
                 selectedStates = []
                 createMapAndLegend(stateData, usMap);
-                createNationalGraph(stateData)
-                createTopFiveGraphs(stateData)
+                var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
+                switch(graph_type){
+                    case 0:
+                        createNationalGraph(stateData);
+                        break;
+                    case 1:
+                        drawStateGraph(stateData)
+                        break;
+                    case 2:
+                        createTopFiveGraphs(stateData);
+                        break;
+                    case 3:
+                        writeInformation();
+                        break;
+                    default:
+                        // nothing
+                    }
             });
             createMapAndLegend(stateData, usMap);
-            createNationalGraph(stateData)
-            createTopFiveGraphs(stateData)
+            var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
+            switch(graph_type){
+                case 0:
+                    createNationalGraph(stateData);
+                    break;
+                case 1:
+                    drawStateGraph(stateData)
+                    break;
+                case 2:
+                    createTopFiveGraphs(stateData);
+                    break;
+                case 3:
+                    writeInformation();
+                    break;
+                default:
+                    // nothing
+            }
+            var screen_select = d3.select("#pickyourpoison");
+            screen_select.on('change', function(d){
+                var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
+                switch(graph_type){
+                    case 0:
+                        createNationalGraph(stateData);
+                        break;
+                    case 1:
+                        drawStateGraph(stateData)
+                        break;
+                    case 2:
+                        createTopFiveGraphs(stateData);
+                        break;
+                    case 3:
+                        writeInformation();
+                        break;
+                    default:
+                        // nothing
+                    }
+            })            
         }
 
         function createMapAndLegend(keys, usMap){
@@ -122,24 +129,17 @@
             svg_map = d3.select("div").attr("width", width*2)
             .append("svg")
             .attr("id", "svg_map")
-            .attr("preserveAspectRatio", "xMinYMin meet")
+            //.attr("preserveAspectRatio", "xMinYMin meet")
             // .attr("viewBox", "-"
             //     + adj + " -"
             //     + adj + " "
             //     + (width + adj*3) + " "
             //     + (height*2 + adj*3))
             .attr("width", 2*width)
-            .attr("height", 3*height)
+            .attr("height", 1.5 * height)
             .style("padding", padding)
             .style("margin", margin)
             .classed("svg-content", true);
-
-            svg_map
-            .append("text")
-            .text("CLICK ON ANY STATE TO SHOW DETAILED BREAKDOWN OF TOXICITY")
-            .attr("class", "random")
-            .attr("x", 5)
-	        .attr("y", height+padding*2);
 
             var arr = [];
             const weighting = ReturnWeights();
@@ -157,7 +157,7 @@
             
             colors.domain(arr);
             // draw states map
-            countries = svg_map.append("g").attr("id", "states").attr("width", width);
+            countries = svg_map.append("g").attr("id", "states").attr("width", width).attr("transform", "translate(" + (0) + ","+ (50) + ")");
             countries.selectAll("paths")
                 .data(usMap.features)
                 .enter().append("path")
@@ -173,7 +173,23 @@
                         }
                     }
                     return "#ccc";
-            }).on("mouseover", tip.show).on("mouseout", tip.hide).on('click', function(d){drawStateGraph(d, keys)});
+            }).on("mouseover", tip.show).on("mouseout", tip.hide).on('click', function(selectedState){
+                if(selectedStates.length == 0){
+                    selectedStates.push(selectedState.properties.NAME)
+                }
+                else if(selectedStates[0] == selectedState.properties.NAME){
+                    // do nothing
+                }
+                else if(selectedStates.length == 1){
+                    selectedStates.push(selectedStates[0])
+                    selectedStates[0] = selectedState.properties.NAME
+                }
+                else{
+                    selectedStates[1] = selectedStates[0]
+                    selectedStates[0] = selectedState.properties.NAME
+                }
+                if(document.querySelector("#pickyourpoison").value == '1'){drawStateGraph(keys)}
+            });
             var legend = svg_map.append("g")
                 .attr("id", "legend")
                 .attr("class", "legendaryFail")
@@ -319,7 +335,7 @@
         function createNationalGraph(stateData)
         {
             d3.select("body").select('#container2').remove();
-            svg_graph_all = d3
+            svg_info = d3
                 .select("body")
                 .append("div")
                 .attr("id", "container2")
@@ -331,7 +347,7 @@
                     + adj*2 + " -"
                     + adj + " "
                     + (width + adj*4) + " "
-                    + (height + adj*4))
+                    + (height + adj*3))
                 .attr("width", width)
                 .style("padding", padding + 050)
                 .style("margin", margin)
@@ -429,11 +445,11 @@
 
         function createTopFiveGraphs(stateData)
         {
-            d3.select("body").select('#container3').remove();
+            d3.select("body").select('#container2').remove();
             let graphDiv = d3
                 .select("body")
                 .append("div")
-                .attr("id", "container3")
+                .attr("id", "container2")
                 .attr("class", "svg-container");
 
             var IDENTITY_ATTACK_TOP_5 = stateData.sort(function(a, b){return b.IDENTITY_ATTACK - a.IDENTITY_ATTACK}).slice(0,5);
@@ -473,7 +489,7 @@
                     .style("margin", graphMargin)
                     .classed("svg-content", true)
                     .append("g")
-                    .attr("id", "container3_" + i)
+                    .attr("id", "container2_" + i)
 
                 var xBarScale = d3.scaleLinear()
                     .range([0, graphWidth])
@@ -488,7 +504,7 @@
                 let xbar_axis = d3.axisBottom(xBarScale)
                     .tickSize(-graphHeight*2);
 
-                let container = graphDiv.select("#container3_" + i);
+                let container = graphDiv.select("#container2_" + i);
 
                 container.select("#bars").remove();
 
@@ -565,27 +581,38 @@
             }
         }
 
-        function drawStateGraph(selectedState, stateData){
-            d3.select("body").select('#container4_1').remove();
+        function drawStateGraph(stateData){
+            d3.select("body").select('#container2').remove();
+            var svg_info = d3
+                .select("body")
+                .append("div")
+                .attr("id", "container2")
+                .attr("class", "svg-container")
+                .append("svg")
+                .attr("id", "bar_chart")
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "-"
+                    + adj*2 + " -"
+                    + adj + " "
+                    + (width + adj*4) + " "
+                    + (height + adj*4))
+                .attr("width", width)
+                .style("padding", padding + 050)
+                .style("margin", margin)
+                .classed("svg-content", true)
+                .append("g")
+                .attr("id", "container2_1");
             
-            // var svg_state_graph = d3
-            //     .select("body")
-            //     .select("#container4")
-            //     .select("#bar_chart")
-            //     .append("g")
-            //     .attr("id", "container4_1");
-
-            var svg_state_graph = svg_map
-            .append("g")
-            .attr("id", "container4_1")
-            .attr("transform", "translate(" + (100) + ","+ (height+adj*2)+ ")");
-
+            svg_info.append("text")
+                .text("CLICK ON ANY STATE TO SHOW DETAILED BREAKDOWN OF TOXICITY")
+                .attr("class", "random")
+                .attr("x", 5)
+                .attr("y", height+padding*2);
             var tempData = {}
             var isOneState = true
             var labels = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'SEXUALLY_EXPLICIT', 'THREAT']
             graphDataDict = []
-            if(selectedStates.length == 0){
-                selectedStates.push(selectedState.properties.NAME)
+            if(selectedStates.length == 1){
                 tempData = stateData.filter(function(d){
                     return d.location_name == selectedStates[0]
                 })[0]
@@ -594,12 +621,10 @@
                     graphDataDict.push({label: labels[i], value: graphData[1][i]})
                 }
             }
-            else if(selectedStates[0] == selectedState.properties.NAME){
-                // do nothing
+            else if(selectedStates.length == 0){
+                return; // no data to show
             }
-            else if(selectedStates.length == 1){
-                selectedStates.push(selectedStates[0])
-                selectedStates[0] = selectedState.properties.NAME
+            else if(selectedStates.length == 2){
                 tempData = stateData.filter(function(d){
                     return d.location_name == selectedStates[0]
                 })
@@ -613,8 +638,6 @@
                 isOneState = false
             }
             else{
-                selectedStates[1] = selectedStates[0]
-                selectedStates[0] = selectedState.properties.NAME
                 tempData = stateData.filter(function(d){
                     return d.location_name == selectedStates[0]
                 })
@@ -640,7 +663,7 @@
                 let xbar_axis = d3.axisBottom(xBarScale)
                     .tickSize(-height);
 
-                svg_state_graph.append("g")
+                svg_info.append("g")
                     .attr("id", "bars")
                     .selectAll("chart_bars")
                     .data(graphDataDict)
@@ -656,7 +679,7 @@
                     .attr("height", (height / 5) - 10)
                     .attr("fill", "#ff1493");
 
-                let container = d3.select("#container4_1");
+                let container = d3.select("#container2_1");
 
                 container.append("g")
                         .attr("class", "axis")
@@ -719,7 +742,7 @@
                 let xbar_axis = d3.axisBottom(xBarScale)
                     .tickSize(-height);
 
-                svg_state_graph.append("g")
+                svg_info.append("g")
                     .attr("id", "bars1")
                     .selectAll("chart_bars1")
                     .data(graphDataDict)
@@ -735,7 +758,7 @@
                     .attr("height", ((height / 5) - 10)/2)
                     .attr("fill", "#0E16E9");
 
-                svg_state_graph.append("g")
+                svg_info.append("g")
                     .attr("id", "bars2")
                     .selectAll("chart_bars2")
                     .data(graphDataDict)
@@ -751,7 +774,7 @@
                     .attr("height", ((height / 5) - 10) / 2)
                     .attr("fill", "#FF0101");
 
-                let container = d3.select("#container4_1");
+                let container = d3.select("#container2_1");
 
                 container.append("g")
                         .attr("class", "axis")
@@ -806,7 +829,7 @@
                         .domain([selectedStates[0], selectedStates[1]])
                         .range(["#0E16E9", "#FF0101"]);
                 
-                svg_state_graph.append("g")
+                svg_info.append("g")
                         .attr("class", "legendOrdinal")
                         .attr("transform", "translate(" + (width + 25) + "," + height/2 + ")")
                         .attr("x", width + 25)
@@ -818,83 +841,9 @@
                         .cellFilter(function(d){ return d.label !== "e" })
                         .scale(ordinal);
                 
-                svg_state_graph.select(".legendOrdinal")
+                svg_info.select(".legendOrdinal")
                         .call(legendOrdinal);
             }
-/*
-                var xBarScale = d3.scaleLinear()
-                    .range([0, width])
-                    .domain([0, d3.max(graphData[i], function(d){
-                        return d[graphDataKeys[Math.floor(i/2)]];
-                    })]);
-
-                var yBarScale = d3.scaleBand()
-                    .range([0, height*2])
-                    .domain(graphData[i].map(function(d){return d.location_name}));
-
-                let xbar_axis = d3.axisBottom(xBarScale)
-                    .tickSize(-graphHeight*2);
-
-                svg_state_graph.append("g")
-                        .attr("id", "bars")
-                        .selectAll("chart_bars")
-                        .data(graphData[i])
-                        .enter()
-                        .append("rect")
-                        .attr("x", xBarScale(0))
-                        .attr("y", function(d){ 
-                            return yBarScale(d.location_name)
-                        })
-                        .attr("width", function(d){
-                            return xBarScale(d[graphDataKeys[Math.floor(i/2)]]) - xBarScale(0)
-                        })
-                        .attr("height", (graphHeight * 2 / 5) - 10)
-                        .attr("fill", "#ff1493");
-                
-                container.append("g")
-                        .attr("class", "axis")
-                        .attr("transform", "translate(0," + (graphHeight*2) + ")")
-                        .attr("id","x-axis-bars")
-                        .call(xbar_axis);
-
-                let title = ""
-                if(i % 2 == 0){
-                    title = "Top 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
-                }
-                else{
-                    title = "Bottom 5 " + [graphDataKeys[Math.floor(i/2)]] + " States"
-                }
-                container.append("text")
-                        .attr("id", "bar_x_axis_label")
-                        .attr("x", (graphWidth / 2) - 100)
-                        .attr("y", -20)
-                        .attr("fill", "black")
-                        .attr("font-weight", "normal")
-                        .attr("font-size", "14px")
-                        .attr("font-family", "Arial Black")
-                        .text(title);
-
-                let ybar_axis = d3.axisLeft()
-                        .scale(yBarScale);
-
-                container.append("g")
-                        .attr("class", "axis")
-                        .attr("transform", 'translate(0,0)')
-                        .attr("id", "y-axis-bars")
-                        .call(ybar_axis);
-
-                container.append("text")
-                        .attr("id", "bar_y_axis_label")
-                        .attr("transform", "rotate(-90)")
-                        .attr("x", -(graphHeight*2) + 50)
-                        .attr("y", -70)
-                        .attr("text-anchor", "end")
-                        .attr("fill", "black")
-                        .attr("font-weight", "normal")
-                        .attr("font-size", "14px")
-                        .attr("font-family", "Arial Black")
-                        .text("States"); 
-                        */
         }
 
         function WeightScores(weights, data)
@@ -932,5 +881,21 @@
                 ret_arrs.push(weight)
             }
             return ret_arrs;
+        }
+
+        function writeInformation(){
+            d3.select("body").select('#container2').remove();
+            var svg_info = d3
+                .select("body")
+                .append("div")
+                .attr("id", "container2")
+                .html("This application is meant to analyze and visualize toxicity of state's pages within the Reddit online community.<br/><br/> \
+                    Each of the state pages are analyzed through the comments mined from them and are given toxicity scores in five categories: \
+                    Identity Attack, Insult, Profanity, Threat, and Sexually Explicit.<br/><br/> \
+                    In order to quantify the toxicity we are using \'Toxicity Units\'. These units identity the probability of a comment in that state's page \
+                    being that form of toxic.<br/><br/> \
+                    The National Graph which shows all states in order of their overall toxicity score as well as the choropleth US map take the toxicity components and \
+                    add them together based on weights the user can provide from the sliders. The choropleth converts the sum of weights into letter grades to be \
+                    more easily digestable for the user. The National Graph shows the sum in order to allow the user to understand the differences between the state scores.")
         }
 

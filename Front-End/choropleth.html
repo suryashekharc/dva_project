@@ -42,7 +42,8 @@
         <label for="field4">Sexually Explicit:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field4"></br>
     </form>
-    <!-- <form style = "position:absolute; left:660px; top:140px" id="happyPanda">
+<!--
+    <form style = "position:absolute; left:660px; top:140px" id="happyPanda">
         <label for="State">State:</label><br>
         <input type="text" id="State" name="State" value="" readonly><br>
         <label for="ID_Attack">Identity Attack:</label><br>
@@ -55,7 +56,16 @@
         <input type="text" id="Threat" name="Threat" value="" readonly><br>
         <label for="Sexy">Sexually Explicit:</label><br>
         <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
-    </form> -->
+    </form>
+-->
+    <form style="position:absolute; left:50px; top:600px">
+        <select id="pickyourpoison">
+            <option value=0>National Graph</option>
+            <option value=1>State Comparisons</option>
+            <option value=2>Top 5s / Bottom 5s</option>
+            <option value=3>Help</option>
+        </select>
+    </form>
     <script type="text/javascript" src="./choropleth.js"></script>
      
 </body>
