@@ -8,16 +8,29 @@
     <script type="text/javascript" src="../lib/d3-tip.min.js"></script>
     <script type="text/javascript" src="../lib/topojson.v2.min.js"></script>
     <style>
+        .d3-tip {
+            line-height: 1;
+            padding: 6px;
+            background: rgba(43,43,43, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+        .random {
+            /* font-family: 'Comic Sans MS', 'Papyrus', sans-serif; */
+            font-size: 25px;
+            font-weight: bold;
+            fill: rgb(0, 0, 0);
+        }
     </style>
 
     <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
 </head>
 
-<body style="background-color:grey;">
+<body style="background-color:rgb(213, 210, 210);">
     <div id="container" class="svg-container"></div>
 
     <! –– TODO 2: Update form in-line with weights update (once we narrow down what fields we'd like to use to establish toxicity). -->
-    <form style = "position:absolute; left:0px; top:140px" id="sundae">
+    <form style = "position:absolute; left:1000px; top:140px" id="sundae">
         <label for="field0">Identity Attack:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field0"></br>
         <label for="field1">Insult:</label></br>
@@ -29,6 +42,7 @@
         <label for="field4">Sexually Explicit:</label></br>
         <input type="range" min="0" max="10" value="5" class="slider" id="field4"></br>
     </form>
+<!--
     <form style = "position:absolute; left:660px; top:140px" id="happyPanda">
         <label for="State">State:</label><br>
         <input type="text" id="State" name="State" value="" readonly><br>
@@ -43,7 +57,8 @@
         <label for="Sexy">Sexually Explicit:</label><br>
         <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
     </form>
-    <form style="position:absolute; left:0px; top:400px">
+-->
+    <form style="position:absolute; left:50px; top:600px">
         <select id="pickyourpoison">
             <option value=0>National Graph</option>
             <option value=1>State Comparisons</option>

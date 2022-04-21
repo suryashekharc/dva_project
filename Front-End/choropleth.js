@@ -1,6 +1,7 @@
    // Citation: https://eric.clst.org/tech/usgeojson/
         // For geojson file of US
         /* Initialize tooltip */
+
         tip = d3.tip().attr("id", "tooltip").attr('class', 'd3-tip');
 
         // Define SVG/Margins/Yada Yada
@@ -14,16 +15,19 @@
 
         let svg_map = d3.select("div").append("svg")
         .attr("id", "svg_map")
-        .attr("preserveAspectRatio", "xMinYMin meet")
+        //.attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
             + adj + " -"
             + adj + " "
             + (width + adj*3) + " "
-            + (height + adj*3))
+            + (height/3 + adj*2))
         .attr("width", width)
         .style("padding", padding)
         .style("margin", margin)
-        .classed("svg-content", true);
+        .classed("svg-content", true)
+        // .append("p")
+
+        
 
         let svg_info = d3
             .select("body")
@@ -46,7 +50,7 @@
             .attr("id", "container2_2");
 
         var projection = d3.geoAlbersUsa().translate([width/2, height/2])
-            .scale(600);
+            .scale(900);
         var path = d3.geoPath().projection(projection);
         var colors = d3.scaleQuantile().range(d3.schemeReds[9]);
 
@@ -57,8 +61,9 @@
             d3.json("./us_map.json")
         ]).then(d => { ready(d[0], d[1])});
         function ready(stateData, usMap) {
-            var inputs = d3.select("form#sundae");
+            var inputs = d3.select("form#sundae");            
             inputs.on('change', function(d){
+                selectedStates = []
                 createMapAndLegend(stateData, usMap);
                 var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
                 switch(graph_type){
@@ -121,18 +126,21 @@
         function createMapAndLegend(keys, usMap){
             svg_map.remove();
 
-            svg_map = d3.select("div").append("svg")
+            svg_map = d3.select("div").attr("width", width*2)
+            .append("svg")
             .attr("id", "svg_map")
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "-"
-                + adj + " -"
-                + adj + " "
-                + (width + adj*3) + " "
-                + (height + adj*3))
-            .attr("width", width)
+            //.attr("preserveAspectRatio", "xMinYMin meet")
+            // .attr("viewBox", "-"
+            //     + adj + " -"
+            //     + adj + " "
+            //     + (width + adj*3) + " "
+            //     + (height*2 + adj*3))
+            .attr("width", 2*width)
+            .attr("height", 1.5 * height)
             .style("padding", padding)
             .style("margin", margin)
             .classed("svg-content", true);
+
             var arr = [];
             const weighting = ReturnWeights();
             // TODO 2: expand weighting to be more dynamic or specify what exactly we plan to have for our toxicity fields.
@@ -149,7 +157,7 @@
             
             colors.domain(arr);
             // draw states map
-            countries = svg_map.append("g").attr("id", "states");
+            countries = svg_map.append("g").attr("id", "states").attr("width", width).attr("transform", "translate(" + (0) + ","+ (50) + ")");
             countries.selectAll("paths")
                 .data(usMap.features)
                 .enter().append("path")
@@ -185,7 +193,7 @@
             var legend = svg_map.append("g")
                 .attr("id", "legend")
                 .attr("class", "legendaryFail")
-                .attr("transform", "translate(" + (50) + ")");
+                .attr("transform", "translate(" + (50) + ","+ (0)+ ")");
             
             var legends = d3.legendColor()
                 .scale(colors)
@@ -234,9 +242,6 @@
                     max_threat = Math.max(max_threat, threat);
                     max_sexy = Math.max(max_sexy, sexy);
                 }
-
-
-
                 for(i = 0; i < keys.length; i++)
                 {
                     if (keys[i].location_name.toLowerCase() == name.toLowerCase())
@@ -267,13 +272,20 @@
                         break;
                     }
                 }
-                d3.select("form#happyPanda").select("input#State")._groups[0][0].value = stateName;
-                d3.select("form#happyPanda").select("input#ID_Attack")._groups[0][0].value = IDENTITY_ATTACK;
-                d3.select("form#happyPanda").select("input#Insult")._groups[0][0].value = INSULT;
-                d3.select("form#happyPanda").select("input#Profanity")._groups[0][0].value = PROFANITY;
-                d3.select("form#happyPanda").select("input#Threat")._groups[0][0].value = THREAT;
-                d3.select("form#happyPanda").select("input#Sexy")._groups[0][0].value = SEXUALLY_EXPLICIT;
-                return "";
+                // d3.select("form#happyPanda").select("input#State")._groups[0][0].value = stateName;
+                // d3.select("form#happyPanda").select("input#ID_Attack")._groups[0][0].value = IDENTITY_ATTACK;
+                // d3.select("form#happyPanda").select("input#Insult")._groups[0][0].value = INSULT;
+                // d3.select("form#happyPanda").select("input#Profanity")._groups[0][0].value = PROFANITY;
+                // d3.select("form#happyPanda").select("input#Threat")._groups[0][0].value = THREAT;
+                // d3.select("form#happyPanda").select("input#Sexy")._groups[0][0].value = SEXUALLY_EXPLICIT;
+
+                return "<div><p>State: " + stateName + "</p>"+
+                        "<p>Identity Attack: "+ IDENTITY_ATTACK + "</p>"+
+                        "<p>Insult: "+ INSULT + "</p>"+
+                        "<p>Profanity: "+ PROFANITY + "</p>"+
+                        "<p>Threat: "+ THREAT + "</p>"+
+                        "<p>Sexually Explicit: "+ SEXUALLY_EXPLICIT + "</p>"+
+                        "</div>";
             })
 
             svg_map.call(tip)
@@ -335,7 +347,7 @@
                     + adj*2 + " -"
                     + adj + " "
                     + (width + adj*4) + " "
-                    + (height + adj*4))
+                    + (height + adj*3))
                 .attr("width", width)
                 .style("padding", padding + 050)
                 .style("margin", margin)
@@ -590,7 +602,12 @@
                 .classed("svg-content", true)
                 .append("g")
                 .attr("id", "container2_1");
-
+            
+            svg_info.append("text")
+                .text("CLICK ON ANY STATE TO SHOW DETAILED BREAKDOWN OF TOXICITY")
+                .attr("class", "random")
+                .attr("x", 5)
+                .attr("y", height+padding*2);
             var tempData = {}
             var isOneState = true
             var labels = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'SEXUALLY_EXPLICIT', 'THREAT']
@@ -636,7 +653,7 @@
 
             if(isOneState){
                 var xBarScale = d3.scaleLinear()
-                    .range([0, width])
+                    .range([0, width-20])
                     .domain([0, d3.max(graphData[1])]);
 
                 var yBarScale = d3.scaleBand()
@@ -715,7 +732,7 @@
             }
             else{
                 var xBarScale = d3.scaleLinear()
-                    .range([0, width])
+                    .range([0, width-20])
                     .domain([0, d3.max(graphData[1].concat(graphData[2]))]);
 
                 var yBarScale = d3.scaleBand()
