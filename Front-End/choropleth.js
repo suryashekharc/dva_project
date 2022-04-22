@@ -7,7 +7,7 @@ tip = d3.tip().attr("id", "tooltip").attr('class', 'd3-tip');
 // Define SVG/Margins/Yada Yada
 const margin = { top: 100, right: 50, bottom: 100, left: 50 };
 const width = 1000 - margin.left - margin.right;
-const height = 550 - margin.top - margin.bottom;
+const height = 450 - margin.top - margin.bottom;
 const padding = 50;
 const adj = 80;
 var visibility = "hidden";
@@ -165,12 +165,12 @@ function createMapAndLegend(keys, usMap) {
     svg_map = d3.select("div").attr("width", width * 2)
         .append("svg")
         .attr("id", "svg_map")
-        //.attr("preserveAspectRatio", "xMinYMin meet")
-        // .attr("viewBox", "-"
-        //     + adj + " -"
-        //     + adj + " "
-        //     + (width + adj*3) + " "
-        //     + (height*2 + adj*3))
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "-"
+            + adj + " -"
+            + adj + " "
+            + (width + adj) + " "
+            + (height*1.5 + adj))
         .attr("width", 2 * width)
         .attr("height", 1.5 * height)
         .style("padding", padding)
@@ -499,11 +499,11 @@ function createTopFiveGraphs(stateData) {
     var graphDataKeys = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'THREAT', 'SEXUALLY_EXPLICIT']
 
     for (let i = 0; i < graphData.length; i++) {
-        graphWidth = width / 3;
-        graphHeight = height / 10;
+        graphWidth = 500;
+        graphHeight = 100;
         graphPadding = 50
-        graphMargin = 10
-        horGap = 10
+        graphMargin = 0
+        horGap = 0
 
 
         graphDiv.append("svg")
@@ -511,11 +511,11 @@ function createTopFiveGraphs(stateData) {
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "-"
                 + adj + " -"
-                + adj / 2 + " "
-                + (graphWidth + adj * 2) + " "
-                + (graphHeight + adj * 4))
+                + adj/2+ " "
+                + (graphWidth) + " "
+                + (graphHeight))
             .attr("width", graphWidth)
-            .attr("height", graphHeight * 10)
+            .attr("height", 300)
             .style("padding", graphPadding)
             .style("margin", graphMargin)
             .classed("svg-content", true)
@@ -581,8 +581,8 @@ function createTopFiveGraphs(stateData) {
 
         container.append("text")
             .attr("id", "bar_x_axis_label")
-            .attr("x", (graphWidth / 2) - 50)
-            .attr("y", graphHeight + 70)
+            .attr("x", (graphWidth / 2) - 100)
+            .attr("y", graphHeight *2.5)
             .attr("fill", "black")
             .attr("font-weight", "normal")
             .attr("font-size", "14px")
@@ -618,12 +618,17 @@ function drawStateGraph(stateData) {
         .select("body")
         .append("div")
         .attr("id", "container2")
+        .append("text")
+        .text("CLICK ON ANY TWO STATES TO SHOW DETAILED COMPARISON OF TOXICITY")
+        .attr("class", "random")
+        .attr("x", width/2)
+        .attr("y", 0)
         .attr("class", "svg-container")
         .append("svg")
         .attr("id", "bar_chart")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
-            + adj * 2 + " -"
+            + adj * 4 + " -"
             + adj + " "
             + (width + adj * 4) + " "
             + (height + adj * 4))
@@ -634,11 +639,6 @@ function drawStateGraph(stateData) {
         .append("g")
         .attr("id", "container2_1");
 
-    svg_info.append("text")
-        .text("CLICK ON ANY STATE TO SHOW DETAILED BREAKDOWN OF TOXICITY")
-        .attr("class", "random")
-        .attr("x", 5)
-        .attr("y", height + padding * 2);
     var tempData = {}
     var isOneState = true
     var labels = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'SEXUALLY_EXPLICIT', 'THREAT']
@@ -713,7 +713,7 @@ function drawStateGraph(stateData) {
         let container = d3.select("#container2_1");
 
         container.append("g")
-            .attr("class", "axis")
+            .attr("class", "state_graph_axis")
             .attr("transform", "translate(0," + (height) + ")")
             .attr("id", "x-axis-bars")
             .call(xbar_axis);
@@ -723,20 +723,20 @@ function drawStateGraph(stateData) {
         container.append("text")
             .attr("id", "bar_x_axis_label")
             .attr("x", (width) / 2 - 100)
-            .attr("y", height + 30)
+            .attr("y", height + 60)
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text('Toxicity Units');
 
         container.append("text")
             .attr("id", "title")
             .attr("x", (width) / 2 - 100)
-            .attr("y", -20)
+            .attr("y", -10)
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text(title);
 
@@ -744,7 +744,7 @@ function drawStateGraph(stateData) {
             .scale(yBarScale);
 
         container.append("g")
-            .attr("class", "axis")
+            .attr("class", "state_graph_axis")
             .attr("transform", 'translate(0,0)')
             .attr("id", "y-axis-bars")
             .call(ybar_axis);
@@ -752,12 +752,12 @@ function drawStateGraph(stateData) {
         container.append("text")
             .attr("id", "bar_y_axis_label")
             .attr("transform", "rotate(-90)")
-            .attr("x", -(height) / 2)
-            .attr("y", -135)
+            .attr("x", -(height) / 2+50)
+            .attr("y", -165)
             .attr("text-anchor", "end")
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text("Categories");
     }
@@ -808,7 +808,7 @@ function drawStateGraph(stateData) {
         let container = d3.select("#container2_1");
 
         container.append("g")
-            .attr("class", "axis")
+            .attr("class", "state_graph_axis")
             .attr("transform", "translate(0," + (height) + ")")
             .attr("id", "x-axis-bars")
             .call(xbar_axis);
@@ -818,10 +818,10 @@ function drawStateGraph(stateData) {
         container.append("text")
             .attr("id", "bar_x_axis_label")
             .attr("x", (width) / 2 - 100)
-            .attr("y", height + 30)
+            .attr("y", height + 60)
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text('Toxicity Units');
 
@@ -831,7 +831,7 @@ function drawStateGraph(stateData) {
             .attr("y", -20)
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text(title);
 
@@ -839,7 +839,7 @@ function drawStateGraph(stateData) {
             .scale(yBarScale);
 
         container.append("g")
-            .attr("class", "axis")
+            .attr("class", "state_graph_axis")
             .attr("transform", 'translate(0,0)')
             .attr("id", "y-axis-bars")
             .call(ybar_axis);
@@ -847,12 +847,12 @@ function drawStateGraph(stateData) {
         container.append("text")
             .attr("id", "bar_y_axis_label")
             .attr("transform", "rotate(-90)")
-            .attr("x", -(height) / 2)
-            .attr("y", -135)
+            .attr("x", -(height) / 2+50)
+            .attr("y", -165)
             .attr("text-anchor", "end")
             .attr("fill", "black")
             .attr("font-weight", "normal")
-            .attr("font-size", "14px")
+            .attr("font-size", "24px")
             .attr("font-family", "Arial Black")
             .text("Categories");
 
