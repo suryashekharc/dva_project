@@ -21,6 +21,7 @@
             font-weight: bold;
             fill: rgb(0, 0, 0);
         }
+        .axis { font: 24px sans-serif; }
     </style>
 
     <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
@@ -58,7 +59,7 @@
         <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
     </form>
 -->
-    <form style="position:absolute; left:50px; top:600px">
+    <form style="position:absolute; left:50px; top:600px" >
         <select id="pickyourpoison">
             <option value=0>National Graph</option>
             <option value=1>State Comparisons</option>
@@ -66,6 +67,9 @@
             <option value=3>Help</option>
         </select>
     </form>
+    <select multiple id="states" style="height: 400px; position:absolute; left:1000px; top:740px" >
+    </select>
+
     <script type="text/javascript" src="./choropleth.js"></script>
      
 </body>

@@ -87,7 +87,8 @@
             var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
             switch(graph_type){
                 case 0:
-                    createNationalGraph(stateData);
+                    createCheckBox(stateData);
+                    createNationalGraph(stateData);                    
                     break;
                 case 1:
                     drawStateGraph(stateData)
@@ -106,7 +107,8 @@
                 var graph_type = parseInt(document.querySelector("#pickyourpoison").value)
                 switch(graph_type){
                     case 0:
-                        createNationalGraph(stateData);
+                        createCheckBox(stateData);
+                        createNationalGraph(stateData);                        
                         break;
                     case 1:
                         drawStateGraph(stateData)
@@ -124,26 +126,28 @@
         }
 
         function createCheckBox(stateData){
-            states = stateData.map(d => {
-                return d.location_name
+            dropdown = d3.selectAll("#states").on("change",function(){
+                var fil = d3.select(this)
+                .selectAll("option")
+                .filter(function (d, i) { 
+                    return this.selected; 
+                });
+                // console.log(fil._groups[0].map(a => {
+                //     return a.__data__
+                // }))
+                filtered_states = fil._groups[0].map(a => {
+                    return a.__data__
+                })
+                createNationalGraph(filtered_states)
             })
-            console.log(states);
-            svg_graph_all = d3
-                .select("body")
-                .append("div")
-                .attr("id", "container2")
-                .attr("class", "svg-container")
-                .style("height", "100px")
-
-            svg_graph_all.selectAll("input")
-            .data(states)
-            .enter()
-            .append("input")
-            .attr("type","checkbox")
-            .attr("id", function(d){return d})
-            .attr("value",function(d){return d})
-            .append("text")
-            .text(function(d){return d})
+            
+            dropdown
+                    .selectAll("option")
+                    .data(stateData)
+                    .enter()
+                    .append("option")
+                    .attr("value", function(d) { return d.location_name })
+                    .text(function(d) { return d.location_name; })
         }
 
         function createMapAndLegend(keys, usMap){
@@ -357,14 +361,16 @@
 
         function createNationalGraph(stateData)
         {
-            console.log(stateData)
+            console.log(stateData.map(o=>{return o.location_name}))
             d3.select("body").select('#container2').remove();
-            svg_info = d3
+            svg_graph_all = d3
                 .select("body")
                 .append("div")
                 .attr("id", "container2")
                 .attr("class", "svg-container")
+                ;
 
+            var height = 75 + (stateData.length * 10)
             
 
             svg_graph_all    
@@ -373,10 +379,11 @@
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", "-"
                     + adj*2 + " -"
-                    + adj + " "
+                    + 0 + " "
                     + (width + adj*4) + " "
-                    + (height + adj*3))
+                    + (height + adj*4))
                 .attr("width", width)
+                .attr("height", 2*height)
                 .style("padding", padding + 050)
                 .style("margin", margin)
                 .classed("svg-content", true)
@@ -395,8 +402,7 @@
                 weightedState = weightedState[0] + weightedState[1] + weightedState[2] + weightedState[3] + weightedState[4];
                 arr.push(weightedState)
                 stateData[i].t_score= weightedState;
-            }
-            
+            }            
             var sortedStateData = stateData.sort(function(a, b){
                 return b.t_score - a.t_score;
             });
@@ -408,11 +414,11 @@
                     })]);
 
             var yBarScale = d3.scaleBand()
-                    .range([0, height])
+                    .range([0, 2*height])
                     .domain(sortedStateData.map(function(d){return d.location_name}));
 
             let xbar_axis = d3.axisBottom(xBarScale)
-            .tickSize(-height);
+            .tickSize(-2*height);
 
             let container2 = d3.select("#container2_2");
 
@@ -422,7 +428,10 @@
                     .selectAll("chart_bars")
                     .data(sortedStateData)
                     .enter()
-                    .append("rect")
+                    .append("rect") 
+                    .attr("id", function(d){
+                        return d.location_name
+                    })
                     .attr("x", xBarScale(0))
                     .attr("y", function(d){ 
                         return yBarScale(d.location_name)
@@ -430,22 +439,23 @@
                     .attr("width", function(d){
                         return xBarScale(d.t_score) - xBarScale(0)
                     })
-                    .attr("height", ((height)/sortedStateData.length - 2))
-                    .attr("fill", "#ff1493");
+                    .attr("height", ((2*height)/sortedStateData.length - 5))
+                    .attr("fill", "#ff1493")
+                    .attr("transform", "translate(100," + (0) + ")");
 
             container2.append("g")
                     .attr("class", "axis")
-                    .attr("transform", "translate(0," + (height) + ")")
+                    .attr("transform", "translate(100," + (2*height) + ")")
                     .attr("id","x-axis-bars")
                     .call(xbar_axis);
 
             container2.append("text")
                     .attr("id", "bar_x_axis_label")
-                    .attr("x", (width-50)/2)
-                    .attr("y", height + 50)
+                    .attr("x", (width)/2-100)
+                    .attr("y", 2*height + 100)
                     .attr("fill", "black")
                     .attr("font-weight", "normal")
-                    .attr("font-size", "14px")
+                    .attr("font-size", "35px")
                     .attr("font-family", "Arial Black")
                     .text("Toxicity Score");
 
@@ -454,7 +464,7 @@
 
             container2.append("g")
                     .attr("class", "axis")
-                    .attr("transform", 'translate(0,0)')
+                    .attr("transform", 'translate(100,0)')
                     .attr("id", "y-axis-bars")
                     .call(ybar_axis);
 
@@ -462,11 +472,11 @@
                     .attr("id", "bar_y_axis_label")
                     .attr("transform", "rotate(-90)")
                     .attr("x", -(height - 50)/2)
-                    .attr("y", -150)
+                    .attr("y", -100)
                     .attr("text-anchor", "end")
                     .attr("fill", "black")
                     .attr("font-weight", "normal")
-                    .attr("font-size", "14px")
+                    .attr("font-size", "35px")
                     .attr("font-family", "Arial Black")
                     .text("States"); 
         }
