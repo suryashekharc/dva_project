@@ -8,24 +8,10 @@
     <script type="text/javascript" src="../lib/d3-tip.min.js"></script>
     <script type="text/javascript" src="../lib/topojson.v2.min.js"></script>
     <style>
-        .d3-tip {
-            line-height: 1;
-            padding: 6px;
-            background: rgba(43,43,43, 0.8);
-            color: #fff;
-            border-radius: 2px;
-        }
-        .random {
-            /* font-family: 'Comic Sans MS', 'Papyrus', sans-serif; */
-            font-size: 25px;
-            font-weight: bold;
-            fill: rgb(0, 0, 0);
-        }
-        .national_graph_axis { font: 24px sans-serif; }
-        .state_graph_axis { font: 14px sans-serif; }
+        
     </style>
-
-    <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
+    <link rel="stylesheet" href="styles.css">
+    <h1 style="text-align: center;">Map of Toxicity in Subreddits in the United States of America</h1>
 </head>
 
 <body style="background-color:rgb(213, 210, 210);">
@@ -60,17 +46,21 @@
         <input type="text" id="Sexy" name="Sexy" value="" readonly><br>
     </form>
 -->
-    <form style="position:absolute; left:50px; top:100px" >
-        <select id="pickyourpoison">
-            <option value=2>Top 5s / Bottom 5s</option>
-            <option value=1>State Comparisons</option>
-            <option value=0>National Graph</option>                    
-            <option value=3>Help</option>
-        </select>
-    </form>
+    <div class="dropdown">
+        <h2 style="position:absolute; left:50px; top: 530px">Graph Type</h2>
+        <form style="position:absolute; left:200px; top: 550px" >
+            <select id="pickyourpoison" class="custom-dropdown">                        
+                <option value=0>National Graph</option>                    
+                <option value=1>State Comparisons</option>
+                <option value=2>Top 5s / Bottom 5s</option>
+                <option value=3>Help</option>
+            </select>
+        </form>
+    </div>
+    
     <div id="national_graph" style="visibility: hidden;">
-        <h3 style="position:absolute; left:1000px;">Select States to Compare Toxicity Scores </h3>
-    <select multiple id="states" style="height: 400px; position:absolute; left:1000px; top:640px" >
+        <h3 style="position:absolute; left:900px;">Select States From Dropdown to Compare Toxicity Scores </h3>
+    <select multiple id="states" style="height: 400px; position:absolute; left:1000px; top:600px" >
     </select>
     </div>    
 

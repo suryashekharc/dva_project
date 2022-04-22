@@ -168,9 +168,9 @@ function createMapAndLegend(keys, usMap) {
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
             + adj + " -"
-            + adj + " "
+            + adj*2 + " "
             + (width + adj) + " "
-            + (height*1.5 + adj))
+            + (height*2 + adj))
         .attr("width", 2 * width)
         .attr("height", 1.5 * height)
         .style("padding", padding)
@@ -499,7 +499,7 @@ function createTopFiveGraphs(stateData) {
     var graphDataKeys = ['IDENTITY_ATTACK', 'INSULT', 'PROFANITY', 'THREAT', 'SEXUALLY_EXPLICIT']
 
     for (let i = 0; i < graphData.length; i++) {
-        graphWidth = 500;
+        graphWidth = 600;
         graphHeight = 100;
         graphPadding = 50
         graphMargin = 0
@@ -523,7 +523,7 @@ function createTopFiveGraphs(stateData) {
             .attr("id", "container2_" + i)
 
         var xBarScale = d3.scaleLinear()
-            .range([0, graphWidth])
+    .range([0, graphWidth/2])
             .domain([0, d3.max(graphData[i], function (d) {
                 return d[graphDataKeys[Math.floor(i / 2)]];
             })]);
@@ -618,7 +618,9 @@ function drawStateGraph(stateData) {
         .select("body")
         .append("div")
         .attr("id", "container2")
-        .append("text")
+        .append("h3")
+        .style("text-align", "center")
+        .style("padding-top", "20px")
         .text("CLICK ON ANY TWO STATES TO SHOW DETAILED COMPARISON OF TOXICITY")
         .attr("class", "random")
         .attr("x", width/2)
@@ -917,13 +919,14 @@ function writeInformation() {
         .select("body")
         .append("div")
         .attr("id", "container2")
-        .html("This application is meant to analyze and visualize toxicity of state's pages within the Reddit online community.<br/><br/> \
+        .style("padding", "50px ")
+        .html("<b>This application is meant to analyze and visualize toxicity of state's pages within the Reddit online community.<br/><br/> \
                     Each of the state pages are analyzed through the comments mined from them and are given toxicity scores in five categories: \
                     Identity Attack, Insult, Profanity, Threat, and Sexually Explicit.<br/><br/> \
                     In order to quantify the toxicity we are using \'Toxicity Units\'. These units identity the probability of a comment in that state's page \
                     being that form of toxic.<br/><br/> \
                     The National Graph which shows all states in order of their overall toxicity score as well as the choropleth US map take the toxicity components and \
                     add them together based on weights the user can provide from the sliders. The choropleth converts the sum of weights into letter grades to be \
-                    more easily digestable for the user. The National Graph shows the sum in order to allow the user to understand the differences between the state scores.")
+                    more easily digestable for the user. The National Graph shows the sum in order to allow the user to understand the differences between the state scores.</b>")
 }
 
