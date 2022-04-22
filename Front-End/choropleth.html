@@ -21,7 +21,7 @@
             font-weight: bold;
             fill: rgb(0, 0, 0);
         }
-        .axis { font: 24px sans-serif; }
+        .national_graph_axis { font: 24px sans-serif; }
     </style>
 
     <center style="font-size:3vw"><text >Map of Toxicity in Subreddits in the United States of America</text></center>
@@ -67,8 +67,11 @@
             <option value=3>Help</option>
         </select>
     </form>
+    <div id="national_graph" style="visibility: hidden;">
+        <h3 style="position:absolute; left:1000px;">Select States to Compare Toxicity Scores </h3>
     <select multiple id="states" style="height: 400px; position:absolute; left:1000px; top:740px" >
     </select>
+    </div>    
 
     <script type="text/javascript" src="./choropleth.js"></script>
      
