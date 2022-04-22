@@ -366,6 +366,7 @@ function createNationalGraph(stateData) {
 
     var temp_height = 75 + (stateData.length * 10)
 
+    var title="Graph of States vs Toxicity Score"
 
     svg_graph_all
         .append("svg")
@@ -417,7 +418,18 @@ function createNationalGraph(stateData) {
     let container2 = d3.select("#container2_2");
 
     container2.select("#bars").remove();
-    container2.append("g")
+    container2
+    .append("text")
+            .attr("id", "title")
+            .attr("x", (width) / 2 - 100)
+            .attr("y", -20)
+            .attr("fill", "black")
+            .attr("font-weight", "normal")
+            .attr("font-size", "24px")
+            .attr("font-family", "Arial Black")
+            .text(title);
+    container2        
+    .append("g")
         .attr("id", "bars")
         .selectAll("chart_bars")
         .data(sortedStateData)
@@ -571,7 +583,7 @@ function createTopFiveGraphs(stateData) {
 
         container.append("text")
             .attr("id", "bar_x_axis_label")
-            .attr("x", (graphWidth / 2) - 100)
+            .attr("x", (graphWidth / 2) - 250)
             .attr("y", -20)
             .attr("fill", "black")
             .attr("font-weight", "normal")
