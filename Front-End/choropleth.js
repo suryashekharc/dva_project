@@ -630,24 +630,29 @@ function drawStateGraph(stateData) {
         .select("body")
         .append("div")
         .attr("id", "container2")
+        .attr("width", 3*width);
+
+        svg_info
         .append("h3")
         .style("text-align", "center")
         .style("padding-top", "20px")
         .text("CLICK ON ANY TWO STATES TO SHOW DETAILED COMPARISON OF TOXICITY")
         .attr("class", "random")
         .attr("x", width/2)
-        .attr("y", 0)
-        .attr("class", "svg-container")
+        .attr("y", 0);
+
+        svg_info = svg_info        
         .append("svg")
+        .attr("class", "svg-container")
         .attr("id", "bar_chart")
-        .attr("preserveAspectRatio", "xMinYMin meet")
+        // .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "-"
-            + adj * 4 + " -"
+            + adj*3+ " -"
             + adj + " "
-            + (width + adj * 4) + " "
-            + (height + adj * 4))
+            + (width + adj * 5) + " "
+            + (2*height + adj * 4))
         .attr("width", width)
-        .style("padding", padding + 050)
+        // .style("padding", padding + 50)
         .style("margin", margin)
         .classed("svg-content", true)
         .append("g")
@@ -698,7 +703,7 @@ function drawStateGraph(stateData) {
 
     if (isOneState) {
         var xBarScale = d3.scaleLinear()
-            .range([0, width - 20])
+            .range([0, width - 50])
             .domain([0, d3.max(graphData[1])]);
 
         var yBarScale = d3.scaleBand()
