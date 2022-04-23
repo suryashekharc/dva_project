@@ -14,7 +14,7 @@ dict = {
 "WestVirginia":"West Virginia"
 }
 
-df = pd.read_csv("output.csv")
+df = pd.read_csv("Perspective_output/output_sqrt_weighted.csv")
 
 for idx, row in df.iterrows():
     if df.loc[idx, 'location_name'] in dict:
