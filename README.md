@@ -10,7 +10,7 @@ Please run DataCleaner.py in our root folder containing the output.csv from our 
 <li>This will take the output.csv and create a new output_clean.csv.</li>
 <li>Please take this new output_clean.csv file and place it within the Front-End folder.</li>
 <li>Setup a local HTTP server for Python in the root of your local directory.
-For more details, see https://ryanblunden.com/create-a-http-server-with-one-command-thanks-to-python-29fcfdcd240e)</li>
+For more details, see [this link](https://ryanblunden.com/create-a-http-server-with-one-command-thanks-to-python-29fcfdcd240e)</li>
 <li>Launch the "choropleth.html" on your local browser</li>
 <li>Voila!</li>
 <br>
