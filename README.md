@@ -2,7 +2,7 @@
 
 
 For a quick and easy start-up:<br>
-<li>Clone [repository](https://github.com/suryashekharc/dva_project) to your local directory</li>
+<li>Clone [repository](https://github.com/suryashekharc/dva_project) to your local directory for data and required scripts</li>
 <li>Follow instructions below or simply use current data by using the PyCharm feature of running the "Front-End/choropleth.html" to a local browser</li>
 <br>
 <br>
